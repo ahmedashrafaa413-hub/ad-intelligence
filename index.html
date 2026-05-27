@@ -3,196 +3,1068 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ad Intelligence Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>AdIntelligence — منصة تحليل الحملات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#080A0F;--s1:#0D1117;--s2:#161B22;--s3:#1C2333;--border:rgba(255,255,255,0.07);--text:#E6EDF3;--muted:#7D8590;--accent:#58A6FF;--accent2:#7C5CFF;--green:#3FB950;--amber:#D29922;--red:#F85149;--font:'IBM Plex Sans Arabic',sans-serif;--mono:'JetBrains Mono',monospace}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
-.shell{display:flex;min-height:100vh}
-.sidebar{width:220px;background:var(--s1);border-left:1px solid var(--border);position:fixed;right:0;top:0;bottom:0;padding:16px 12px;overflow-y:auto;z-index:100;display:flex;flex-direction:column}
-.main{margin-right:220px;flex:1;padding:24px 28px}
-.brand{display:flex;align-items:center;gap:8px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.brand-icon{width:28px;height:28px;background:linear-gradient(135deg,#58A6FF,#7C5CFF);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
-.brand-txt{font-size:12px;font-weight:600;color:var(--text)}
-.nlbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 8px;margin:12px 0 4px}
-.nb{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer;font-size:12px;color:var(--muted);border:none;background:none;width:100%;text-align:right;font-family:var(--font);transition:all .15s}
-.nb:hover{color:var(--text);background:rgba(255,255,255,0.04)}
-.nb.active{color:var(--accent);background:rgba(88,166,255,0.08);font-weight:500}
-.pill{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:11px;color:var(--muted);border:1px solid var(--border);background:none;transition:all .15s;width:100%;text-align:right;font-family:var(--font);margin-bottom:3px}
-.pill.sel{border-color:var(--accent);color:var(--accent);background:rgba(88,166,255,0.07)}
-.dot{width:6px;height:6px;border-radius:50%}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.page-title{font-size:19px;font-weight:600}
-.page-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:var(--font);transition:opacity .15s}
-.btn-p{background:linear-gradient(135deg,#58A6FF,#7C5CFF);color:#fff}
-.btn-p:hover{opacity:.85}
-.btn-g{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--border)}
-.sec{display:none}.sec.active{display:block}
-.card{background:var(--s1);border:1px solid var(--border);border-radius:11px;padding:16px 20px;margin-bottom:12px}
-.card-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:12px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.fl{font-size:11px;color:var(--muted);margin-bottom:3px;display:block}
-input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font);font-size:12px;padding:7px 10px;outline:none}
-input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-textarea{resize:vertical;min-height:65px}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:16px}
-.kpi{background:var(--s1);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
-.kpi-l{font-size:9px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
-.kpi-v{font-size:21px;font-weight:600;font-family:var(--mono)}
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500}
-.bg{background:rgba(63,185,80,.12);color:var(--green)}
-.ba{background:rgba(210,153,34,.12);color:var(--amber)}
-.br{background:rgba(248,81,73,.12);color:var(--red)}
-.bb{background:rgba(88,166,255,.12);color:var(--accent)}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.chart-card{background:var(--s1);border:1px solid var(--border);border-radius:11px;padding:16px}
-.chart-title{font-size:11px;font-weight:500;color:var(--text);margin-bottom:12px}
-canvas{max-height:180px}
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:11px}
-th{padding:8px 10px;text-align:right;font-size:9px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer}
-th:hover{color:var(--accent)}
-td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap}
-tr:hover td{background:rgba(255,255,255,0.015)}
-.rw td{background:rgba(248,81,73,0.04)!important}
-.rb td{background:rgba(63,185,80,0.04)!important}
-.ai-box{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:13px;font-size:12px;line-height:1.8;color:var(--text);min-height:70px;white-space:pre-wrap;margin-top:10px}
-.spin{display:inline-block;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* API BAR */
-#apiBar{position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--s1);border-bottom:1px solid rgba(124,92,255,0.3);padding:7px 16px;display:flex;align-items:center;gap:8px}
-#apiBar input{max-width:400px;font-size:11px;padding:5px 9px;background:var(--s2);border:1px solid rgba(124,92,255,0.25);border-radius:6px;color:var(--text);font-family:monospace}
-#apiSpacer{height:38px}
-.or-tag{font-size:10px;color:#7C5CFF;background:rgba(124,92,255,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(124,92,255,0.3);white-space:nowrap}
-#keyStatus{font-size:11px;color:var(--muted);white-space:nowrap}
-.save-btn{background:rgba(124,92,255,0.15);border:1px solid rgba(124,92,255,0.3);border-radius:5px;color:#7C5CFF;cursor:pointer;font-size:10px;padding:4px 9px;font-family:var(--font)}
-/* CHAT */
-.chat-wrap{display:flex;flex-direction:column;height:490px;background:var(--s1);border:1px solid var(--border);border-radius:11px;overflow:hidden}
-.chat-head{padding:11px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.c-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#58A6FF,#7C5CFF);display:flex;align-items:center;justify-content:center;font-size:13px}
-.chat-msgs{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px}
-.msg{display:flex;gap:7px;max-width:88%}
-.msg.user{align-self:flex-end;flex-direction:row-reverse}
-.msg-b{padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.7;white-space:pre-wrap}
-.msg.ai .msg-b{background:var(--s2);border:1px solid var(--border);border-radius:8px 8px 8px 2px}
-.msg.user .msg-b{background:linear-gradient(135deg,#58A6FF,#7C5CFF);color:#fff;border-radius:8px 8px 2px 8px}
-.m-av{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px}
-.chat-inp-wrap{padding:9px 13px;border-top:1px solid var(--border);display:flex;gap:6px;align-items:flex-end}
-.chat-inp{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font);font-size:12px;padding:7px 10px;resize:none;min-height:36px;max-height:90px;outline:none}
-.chat-inp:focus{border-color:var(--accent)}
-.send-btn{width:34px;height:34px;border-radius:6px;background:linear-gradient(135deg,#58A6FF,#7C5CFF);border:none;color:#fff;cursor:pointer;font-size:15px;flex-shrink:0}
-.send-btn:disabled{opacity:.3;cursor:not-allowed}
-.qbtns{display:flex;flex-wrap:wrap;gap:4px;padding:0 13px 7px}
-.qb{padding:4px 10px;border-radius:20px;font-size:10px;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted);font-family:var(--font)}
-.qb:hover{border-color:var(--accent);color:var(--accent)}
-.typing{display:flex;gap:3px;align-items:center;padding:7px 11px}
-.typing span{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:tb 1.3s infinite}
-.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
-@keyframes tb{0%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
-/* META TABLE */
-.tbl-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px}
-.tbl-controls select,.tbl-controls input{width:auto;font-size:11px;padding:4px 8px}
-.metric-toggle{font-size:10px;padding:3px 9px;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:var(--s2);color:var(--muted);user-select:none}
-.metric-toggle.on{background:rgba(88,166,255,0.12);color:var(--accent);border-color:rgba(88,166,255,0.4)}
-/* FUNNEL */
-.f-stage{display:flex;align-items:center;gap:9px;padding:8px 11px;background:var(--s2);border:1px solid var(--border);border-radius:7px;margin-bottom:5px}
-.f-bar{flex:1;height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden}
-.f-fill{height:100%;border-radius:3px;transition:width .5s}
-/* REPORT */
-#rpt{display:none;position:fixed;inset:0;background:#fff;z-index:99999;overflow-y:auto;padding:32px;color:#111}
-.rpt-h{display:flex;justify-content:space-between;border-bottom:3px solid #1E3A5F;padding-bottom:14px;margin-bottom:24px}
-.rpt-logo{font-size:16px;font-weight:700;color:#1E3A5F}
-.r-kgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
-.r-kpi{background:#F0F4FA;border-radius:8px;padding:11px;text-align:center;border-top:3px solid #1E3A5F}
-.r-kv{font-size:18px;font-weight:700;color:#1E3A5F}
-.r-kl{font-size:9px;color:#666;text-transform:uppercase;margin-top:2px}
-.r-sec{margin-bottom:22px}
-.r-st{font-size:13px;font-weight:700;color:#1E3A5F;border-bottom:2px solid #E0E8F0;padding-bottom:6px;margin-bottom:10px}
-.r-table{width:100%;border-collapse:collapse;font-size:11px}
-.r-table th{background:#1E3A5F;color:#fff;padding:6px 9px;text-align:right}
-.r-table td{padding:6px 9px;border-bottom:1px solid #E8F0F8}
-.r-aib{background:#F0F4FA;border-radius:8px;padding:13px;font-size:11px;line-height:1.8;white-space:pre-wrap;border-right:4px solid #1E3A5F}
-.rpt-btns{position:fixed;bottom:18px;left:18px;display:flex;gap:8px}
-.rpt-btns button{padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)}
-@media print{.rpt-btns{display:none!important}body>*:not(#rpt){display:none!important}#rpt{display:block!important;position:static}}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
-@media(max-width:768px){.sidebar{display:none}.main{margin-right:0;padding:14px}.chart-grid,.g2,.g3,.g4{grid-template-columns:1fr}}
+/* ═══════════════════════════════
+   DESIGN SYSTEM — DEEP SPACE AGENCY
+   Dark premium with electric accents
+═══════════════════════════════ */
+:root {
+  --bg:       #05060A;
+  --bg1:      #0A0C14;
+  --bg2:      #0F1120;
+  --bg3:      #151829;
+  --border:   rgba(255,255,255,.06);
+  --border2:  rgba(255,255,255,.12);
+  --text:     #EEF0F8;
+  --muted:    #6B7280;
+  --muted2:   #4B5563;
+  --accent:   #6366F1;
+  --accent2:  #818CF8;
+  --green:    #10B981;
+  --amber:    #F59E0B;
+  --red:      #EF4444;
+  --cyan:     #06B6D4;
+  --font:     'Tajawal', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+  --display:  'Syne', sans-serif;
+  --sidebar:  240px;
+  --topbar:   56px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient background effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: 60%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  right: 70%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(6,182,212,.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(99,102,241,.3); border-radius: 2px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ═══ LAYOUT ═══ */
+.shell { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ═══ SIDEBAR ═══ */
+.sidebar {
+  width: var(--sidebar);
+  background: var(--bg1);
+  border-left: 1px solid var(--border);
+  position: fixed;
+  right: 0; top: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.sidebar-top {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.brand-logo {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(99,102,241,.4);
+}
+
+.brand-text { line-height: 1.2; }
+.brand-name {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  background: linear-gradient(135deg, var(--accent2), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.brand-sub { font-size: 9px; color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; }
+
+/* Platform pills */
+.plat-pills {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.plat-pill {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: none;
+  font-size: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all .15s;
+}
+.plat-pill:hover { border-color: var(--border2); color: var(--text); }
+.plat-pill.sel {
+  background: rgba(99,102,241,.12);
+  border-color: rgba(99,102,241,.4);
+  color: var(--accent2);
+}
+.plat-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-section {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  padding: 10px 8px 4px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-family: var(--font);
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  text-align: right;
+  transition: all .15s;
+  position: relative;
+}
+.nav-btn:hover { background: rgba(255,255,255,.04); color: var(--text); }
+.nav-btn.active {
+  background: rgba(99,102,241,.1);
+  color: var(--accent2);
+}
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  right: 0; top: 25%; bottom: 25%;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 2px 0 0 2px;
+}
+.nav-icon {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.04);
+}
+.nav-btn.active .nav-icon {
+  background: rgba(99,102,241,.2);
+}
+
+.nav-badge {
+  margin-right: auto;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(99,102,241,.2);
+  color: var(--accent2);
+  font-family: var(--mono);
+}
+
+.sidebar-bottom {
+  padding: 12px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.report-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(99,102,241,.3);
+  background: rgba(99,102,241,.08);
+  color: var(--accent2);
+  font-size: 12px;
+  font-family: var(--font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+.report-btn:hover {
+  background: rgba(99,102,241,.15);
+  box-shadow: 0 0 20px rgba(99,102,241,.2);
+}
+
+/* ═══ MAIN ═══ */
+.main {
+  margin-right: var(--sidebar);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══ TOPBAR ═══ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--topbar);
+  background: rgba(5,6,10,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 12px;
+}
+
+.page-title {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: .3px;
+}
+.page-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+  margin-right: auto;
+  align-items: center;
+}
+
+/* API Key bar */
+.api-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(99,102,241,.08);
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+.api-bar input {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--mono);
+  width: 180px;
+  outline: none;
+}
+.api-bar input::placeholder { color: var(--muted2); }
+.api-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--accent2);
+  background: rgba(99,102,241,.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ═══ CONTENT ═══ */
+.content {
+  flex: 1;
+  padding: 24px 28px;
+  overflow-y: auto;
+}
+
+.sec { display: none; animation: fadeIn .2s ease; }
+.sec.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ═══ COMPONENTS ═══ */
+
+/* Cards */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--border2); }
+.card-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .3px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-accent {
+  background: linear-gradient(135deg, rgba(99,102,241,.08), rgba(6,182,212,.05));
+  border-color: rgba(99,102,241,.2);
+}
+.card-green { background: rgba(16,185,129,.04); border-color: rgba(16,185,129,.15); }
+.card-amber { background: rgba(245,158,11,.04); border-color: rgba(245,158,11,.15); }
+.card-red   { background: rgba(239,68,68,.04);  border-color: rgba(239,68,68,.15);  }
+
+/* KPI Grid */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.kpi {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all .2s;
+}
+.kpi:hover { border-color: var(--border2); transform: translateY(-1px); }
+.kpi::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  opacity: 0;
+  transition: opacity .2s;
+}
+.kpi:hover::after { opacity: .5; }
+.kpi-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; font-family: var(--mono); color: var(--text); line-height: 1; }
+.kpi-delta { font-size: 10px; margin-top: 4px; display: flex; align-items: center; gap: 3px; }
+.delta-up { color: var(--green); }
+.delta-dn { color: var(--red); }
+.delta-neu { color: var(--muted); }
+
+/* Grids */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+/* Charts */
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.chart-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.chart-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .3px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+canvas { max-height: 200px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 18px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #4F46E5);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(99,102,241,.3);
+}
+.btn-primary:hover { box-shadow: 0 6px 20px rgba(99,102,241,.45); transform: translateY(-1px); }
+.btn-ghost {
+  background: rgba(255,255,255,.05);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: rgba(255,255,255,.08); border-color: var(--border2); }
+.btn-green { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid rgba(16,185,129,.3); }
+
+/* Inputs */
+input, select, textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color .15s;
+}
+input:focus, select:focus, textarea:focus { border-color: rgba(99,102,241,.5); }
+input::placeholder, textarea::placeholder { color: var(--muted2); }
+label.fl { font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 5px; }
+textarea { resize: vertical; min-height: 65px; }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+th {
+  padding: 8px 12px;
+  text-align: right;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color .15s;
+}
+th:hover { color: var(--accent2); }
+td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.03); white-space: nowrap; }
+tr:hover td { background: rgba(255,255,255,.02); }
+tr.row-best td { background: rgba(16,185,129,.04) !important; }
+tr.row-worst td { background: rgba(239,68,68,.04) !important; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.badge-green { background: rgba(16,185,129,.12); color: var(--green); }
+.badge-amber { background: rgba(245,158,11,.12); color: var(--amber); }
+.badge-red   { background: rgba(239,68,68,.12);  color: var(--red); }
+.badge-blue  { background: rgba(99,102,241,.12); color: var(--accent2); }
+.badge-cyan  { background: rgba(6,182,212,.12);  color: var(--cyan); }
+
+/* AI Box */
+.ai-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-right: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text);
+  min-height: 60px;
+  white-space: pre-wrap;
+}
+
+/* Spinner */
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Blink */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ═══ CHAT ═══ */
+.chat-wrap {
+  height: 520px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.chat-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg3);
+}
+.chat-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 0 15px rgba(99,102,241,.3);
+  flex-shrink: 0;
+}
+.chat-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msg { display: flex; gap: 8px; max-width: 85%; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
+.msg-body {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.msg.ai .msg-body {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 4px;
+}
+.msg.user .msg-body {
+  background: linear-gradient(135deg, var(--accent), #4F46E5);
+  color: #fff;
+  border-radius: 12px 12px 4px 12px;
+}
+.msg-av {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.chat-qbtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px 16px;
+}
+.qbtn {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--muted);
+  font-family: var(--font);
+  transition: all .15s;
+}
+.qbtn:hover { border-color: var(--accent2); color: var(--accent2); }
+.chat-input-row {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  background: var(--bg3);
+}
+.chat-input {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 8px 12px;
+  resize: none;
+  min-height: 36px;
+  max-height: 90px;
+  outline: none;
+}
+.chat-input:focus { border-color: rgba(99,102,241,.5); }
+.chat-send {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent), #4F46E5);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: all .2s;
+  box-shadow: 0 4px 12px rgba(99,102,241,.3);
+}
+.chat-send:hover { box-shadow: 0 6px 18px rgba(99,102,241,.45); transform: translateY(-1px); }
+.chat-send:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+.typing-dots { display: flex; gap: 4px; align-items: center; padding: 6px 0; }
+.typing-dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: typingBounce 1.3s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: .2s; }
+.typing-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce { 0%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+
+/* ═══ DPT ═══ */
+.dpt-plat-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg3);
+  padding: 5px;
+  border-radius: 11px;
+  margin-bottom: 14px;
+}
+.dpt-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font);
+  transition: all .15s;
+}
+.dpt-tab:hover { color: var(--text); }
+.dpt-tab.active {
+  background: var(--bg2);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.dpt-view { display: none; }
+.dpt-view.active { display: block; }
+
+/* Progress bars */
+.progress-track {
+  height: 6px;
+  background: rgba(255,255,255,.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  position: relative;
+}
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3));
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer { 0%{transform:translateX(100%)} 100%{transform:translateX(-500%)} }
+
+/* Daily table */
+.day-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+.day-tbl th {
+  padding: 7px 10px;
+  text-align: right;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+}
+.day-tbl td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.03); }
+.day-tbl tr:hover td { background: rgba(255,255,255,.02); }
+.day-tbl tr.today-row td { background: rgba(99,102,241,.05); }
+.day-tbl tr.today-row td:first-child { border-right: 2px solid var(--accent); }
+.di {
+  width: 68px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 11px;
+  padding: 4px 6px;
+  text-align: center;
+  font-family: var(--mono);
+  outline: none;
+  transition: border-color .15s;
+}
+.di:focus { border-color: rgba(99,102,241,.5); }
+
+/* GA Tabs */
+.ga-tabs {
+  display: flex;
+  gap: 3px;
+  background: var(--bg3);
+  padding: 4px;
+  border-radius: 11px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.ga-tab {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.ga-tab:hover { color: var(--text); }
+.ga-tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+.ga-page { display: none; }
+.ga-page.active { display: block; }
+
+/* Setup */
+.conn-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  transition: all .2s;
+}
+.conn-card:hover { border-color: var(--border2); }
+.conn-card.connected {
+  border-color: rgba(16,185,129,.3);
+  background: rgba(16,185,129,.03);
+}
+.conn-card.error { border-color: rgba(239,68,68,.3); }
+
+.oauth-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font);
+  transition: all .2s;
+  letter-spacing: .3px;
+}
+.oauth-btn:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.3); }
+
+/* Calculator */
+.calc-tabs { display: flex; gap: 4px; background: var(--bg3); padding: 4px; border-radius: 11px; margin-bottom: 16px; }
+.calc-tab {
+  flex: 1; padding: 8px 12px;
+  border-radius: 8px; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: none; background: none;
+  color: var(--muted); font-family: var(--font); transition: all .15s;
+}
+.calc-tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+.calc-view { display: none; }
+.calc-view.active { display: block; }
+.result-card {
+  background: linear-gradient(135deg, rgba(99,102,241,.1), rgba(6,182,212,.06));
+  border: 1px solid rgba(99,102,241,.25);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.result-num { font-size: 38px; font-weight: 700; font-family: var(--mono); line-height: 1; }
+.result-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+.result-sub { font-size: 10px; color: var(--muted2); margin-top: 5px; }
+.res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.res-box { background: var(--bg3); border-radius: 9px; padding: 10px; text-align: center; }
+.res-val { font-size: 16px; font-weight: 700; font-family: var(--mono); }
+.res-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+
+/* Funnel */
+.f-stage {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  margin-bottom: 5px;
+}
+.f-bar { flex: 1; height: 5px; background: rgba(255,255,255,.05); border-radius: 3px; overflow: hidden; }
+.f-fill { height: 100%; border-radius: 3px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+/* Media Plan */
+.mp-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.mp-table th {
+  padding: 8px 10px; text-align: right;
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+  background: var(--bg3); white-space: nowrap;
+}
+.mp-table td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.03); white-space: nowrap; }
+.mp-table tr:hover td { background: rgba(255,255,255,.02); }
+.mp-table tr.total-row td { background: rgba(99,102,241,.06); font-weight: 700; }
+.mp-input {
+  width: 65px; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 5px; color: var(--text); font-size: 10px; padding: 3px 6px;
+  text-align: center; font-family: var(--mono); outline: none;
+}
+.mp-input:focus { border-color: rgba(99,102,241,.5); }
+
+/* Creative Leaderboard */
+.lb-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.lb-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+.lb-card.winner { border-color: rgba(16,185,129,.3); background: rgba(16,185,129,.03); }
+.lb-card.loser  { border-color: rgba(239,68,68,.2); }
+.score-ring {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700;
+  font-family: var(--mono);
+  border: 3px solid;
+  flex-shrink: 0;
+}
+.add-creative {
+  border: 2px dashed rgba(99,102,241,.25);
+  border-radius: 14px;
+  padding: 30px 20px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 12px;
+  transition: all .2s;
+}
+.add-creative:hover { border-color: rgba(99,102,241,.5); color: var(--accent2); background: rgba(99,102,241,.04); }
+
+/* Modals */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 26px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn .2s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:translateY(10px)scale(.97)} to{opacity:1;transform:none} }
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-title { font-size: 15px; font-weight: 700; }
+.modal-close {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 20px; line-height: 1;
+  transition: color .15s;
+}
+.modal-close:hover { color: var(--text); }
+
+/* Report */
+#rpt {
+  display: none;
+  position: fixed; inset: 0;
+  background: #fff;
+  z-index: 99999;
+  overflow-y: auto;
+  padding: 32px;
+  color: #111;
+}
+.rpt-h { display:flex; justify-content:space-between; border-bottom:3px solid #1E3A5F; padding-bottom:14px; margin-bottom:24px; }
+.rpt-logo { font-size:16px; font-weight:700; color:#1E3A5F; }
+.r-kgrid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:20px; }
+.r-kpi { background:#F0F4FA; border-radius:8px; padding:11px; text-align:center; border-top:3px solid #1E3A5F; }
+.r-kv { font-size:18px; font-weight:700; color:#1E3A5F; }
+.r-kl { font-size:9px; color:#666; text-transform:uppercase; margin-top:2px; }
+.r-sec { margin-bottom:22px; }
+.r-st { font-size:13px; font-weight:700; color:#1E3A5F; border-bottom:2px solid #E0E8F0; padding-bottom:6px; margin-bottom:10px; }
+.r-table { width:100%; border-collapse:collapse; font-size:11px; }
+.r-table th { background:#1E3A5F; color:#fff; padding:6px 9px; text-align:right; }
+.r-table td { padding:6px 9px; border-bottom:1px solid #E8F0F8; }
+.r-aib { background:#F0F4FA; border-radius:8px; padding:13px; font-size:11px; line-height:1.8; white-space:pre-wrap; border-right:4px solid #1E3A5F; }
+.rpt-btns { position:fixed; bottom:18px; left:18px; display:flex; gap:8px; }
+.rpt-btns button { padding:8px 16px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; font-family:var(--font); }
+@media print { .rpt-btns{display:none!important} body>*:not(#rpt){display:none!important} #rpt{display:block!important;position:static} }
+
+/* Status bar */
+.status-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.status-pill {
+  display:flex; align-items:center; gap:5px;
+  padding:4px 12px; border-radius:20px;
+  font-size:10px; font-weight:600; border:1px solid;
+}
+.sp-conn { background:rgba(16,185,129,.08); color:var(--green); border-color:rgba(16,185,129,.25); }
+.sp-disc { background:rgba(255,255,255,.04); color:var(--muted); border-color:var(--border); }
+
+/* Responsive */
+@media(max-width:768px) {
+  .sidebar { display:none; }
+  .main { margin-right:0; }
+  .content { padding:14px; }
+  .chart-grid,.g2,.g3,.g4 { grid-template-columns:1fr; }
+}
+
+/* ═══ PLATFORM COLORS ═══ */
+.plat-meta    { color:#1877F2; }
+.plat-google  { color:#EA4335; }
+.plat-snap    { color:#FFFC00; }
+.plat-tiktok  { color:#FF0050; }
 </style>
 </head>
 <body>
 
-<!-- API BAR -->
-<div id="apiBar" style="display:none">
-  <span class="or-tag">OpenRouter Free</span>
-  <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." oninput="checkKey()">
-  <span id="keyStatus">ادخل المفتاح</span>
-  <button class="save-btn" onclick="saveKey()">حفظ</button>
-  <a href="https://openrouter.ai/keys" target="_blank" style="font-size:10px;color:#7C5CFF;text-decoration:none;white-space:nowrap">مفتاح مجاني ↗</a>
-  <button onclick="this.parentElement.style.display='none';document.getElementById('apiSpacer').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;margin-right:auto">×</button>
-</div>
-<div id="apiSpacer" style="display:none"></div>
-
-<!-- REPORT SCREEN -->
+<!-- REPORT OVERLAY -->
 <div id="rpt">
   <div class="rpt-h">
     <div><div class="rpt-logo">📡 Ad Intelligence Platform</div><div style="font-size:10px;color:#888" id="r-date"></div></div>
-    <div style="text-align:left"><div style="font-size:12px;font-weight:600" id="r-client"></div><div style="font-size:10px;color:#888">Performance Report</div></div>
+    <div style="text-align:left"><div style="font-size:12px;font-weight:600" id="r-client"></div></div>
   </div>
-  <div style="text-align:center;margin-bottom:20px"><div style="font-size:22px;font-weight:700;color:#1E3A5F" id="r-title"></div><div style="font-size:12px;color:#666" id="r-sub"></div></div>
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:22px;font-weight:700;color:#1E3A5F" id="r-title"></div>
+  </div>
   <div class="r-sec"><div class="r-st">مؤشرات الاداء</div><div class="r-kgrid" id="r-kpis"></div></div>
-  <div class="r-sec"><div class="r-st">الاداء الاسبوعي</div><table class="r-table"><thead><tr><th>اسبوع</th><th>التواريخ</th><th>انفاق</th><th>مشتريات</th><th>ايراد</th><th>ROAS</th><th>CPA</th><th>CVR</th></tr></thead><tbody id="r-tbody"></tbody></table></div>
-  <div class="r-sec"><div class="r-st">التحليل الذكي</div><div class="r-aib" id="r-ai">اضغط توليد ريبورت...</div></div>
-  <div class="r-sec"><div class="r-st">Action Plan</div><div class="r-aib" id="r-plan">سيظهر بعد التحليل...</div></div>
-  <div style="text-align:center;font-size:10px;color:#aaa;margin-top:20px" id="r-footer"></div>
+  <div class="r-sec"><div class="r-st">الأداء الأسبوعي</div>
+    <table class="r-table"><thead><tr><th>أسبوع</th><th>التواريخ</th><th>انفاق</th><th>مشتريات</th><th>إيراد</th><th>ROAS</th><th>CPA</th><th>CVR</th></tr></thead>
+    <tbody id="r-tbody"></tbody></table>
+  </div>
+  <div class="r-sec"><div class="r-st">التحليل الذكي</div><div class="r-aib" id="r-ai">...</div></div>
+  <div class="r-sec"><div class="r-st">Action Plan</div><div class="r-aib" id="r-plan">...</div></div>
   <div class="rpt-btns">
     <button style="background:#1E3A5F;color:#fff;border:none" onclick="window.print()">🖨️ طباعة PDF</button>
-    <button style="background:#fff;border:1px solid #ddd;color:#333" onclick="document.getElementById('rpt').style.display='none'">✕ اغلاق</button>
+    <button style="background:#fff;border:1px solid #ddd;color:#333" onclick="document.getElementById('rpt').style.display='none'">✕ إغلاق</button>
   </div>
 </div>
 
-<!-- SHELL -->
 <div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
 <nav class="sidebar">
-  <div class="brand">
-    <div class="brand-icon">📡</div>
-    <div><div class="brand-txt">AdIntelligence</div><div style="font-size:9px;color:var(--muted)">v3.0 Agency</div></div>
+  <div class="sidebar-top">
+    <div class="brand">
+      <div class="brand-logo">📡</div>
+      <div class="brand-text">
+        <div class="brand-name">AdIntelligence</div>
+        <div class="brand-sub">Agency Platform v3</div>
+      </div>
+    </div>
+    <div class="plat-pills">
+      <button class="plat-pill sel" onclick="setPlatform(this,'Meta')"><span class="plat-dot" style="background:#1877F2"></span>Meta</button>
+      <button class="plat-pill" onclick="setPlatform(this,'Google')"><span class="plat-dot" style="background:#EA4335"></span>Google</button>
+      <button class="plat-pill" onclick="setPlatform(this,'Snapchat')"><span class="plat-dot" style="background:#FFFC00"></span>Snap</button>
+      <button class="plat-pill" onclick="setPlatform(this,'TikTok')"><span class="plat-dot" style="background:#FF0050"></span>TikTok</button>
+    </div>
   </div>
-  <div class="nlbl">الرئيسية</div>
-  <button class="nb active" onclick="go('dashboard',this)">📊 داشبورد</button>
-  <button class="nb" onclick="go('funnel',this)">🔽 Funnel</button>
-  <button class="nb" onclick="go('mediaplan',this)">📋 Media Plan</button>
-  <button class="nb" onclick="go('calculator',this)">🧮 ROAS Calculator</button>
-  <button class="nb" onclick="go('dpt',this)">📅 DPT Tracker</button>
-  <button class="nb" onclick="go('leaderboard',this)">🏆 Creative Board</button>
-  <button class="nb" onclick="go('creative',this)">🎨 Creative</button>
-  <button class="nb" onclick="go('campaigns',this)">🎯 Campaign Data</button>
-  <button class="nb" onclick="go('setup',this)">⚙️ Setup</button>
-  <button class="nb" onclick="go('ga',this)">📈 Google Analytics</button>
-  <button class="nb" onclick="go('framework',this)">🧩 Core Four</button>
-  <button class="nb" onclick="go('chat',this)">💬 AI Chat</button>
-  <button class="nb" onclick="openRpt()" style="color:var(--accent);background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.2)">📋 ريبورت</button>
-  <div class="nlbl">المنصات</div>
-  <button class="pill sel" onclick="setPlatform(this,'Meta')"><span class="dot" style="background:#1877F2"></span>Meta</button>
-  <button class="pill" onclick="setPlatform(this,'Google')"><span class="dot" style="background:#EA4335"></span>Google</button>
-  <button class="pill" onclick="setPlatform(this,'Snapchat')"><span class="dot" style="background:#FFFC00"></span>Snapchat</button>
-  <button class="pill" onclick="setPlatform(this,'TikTok')"><span class="dot" style="background:#FF0050"></span>TikTok</button>
+
+  <div class="sidebar-nav">
+    <div class="nav-section">الرئيسية</div>
+    <button class="nav-btn active" onclick="go('dashboard',this)"><span class="nav-icon">📊</span>داشبورد</button>
+    <button class="nav-btn" onclick="go('funnel',this)"><span class="nav-icon">🔽</span>Funnel</button>
+
+    <div class="nav-section">أدوات التخطيط</div>
+    <button class="nav-btn" onclick="go('mediaplan',this)"><span class="nav-icon">📋</span>Media Plan</button>
+    <button class="nav-btn" onclick="go('calculator',this)"><span class="nav-icon">🧮</span>ROAS Calculator</button>
+    <button class="nav-btn" onclick="go('dpt',this)"><span class="nav-icon">📅</span>DPT Tracker</button>
+
+    <div class="nav-section">التحليل</div>
+    <button class="nav-btn" onclick="go('leaderboard',this)"><span class="nav-icon">🏆</span>Creative Board</button>
+    <button class="nav-btn" onclick="go('creative',this)"><span class="nav-icon">🎨</span>Creative</button>
+    <button class="nav-btn" onclick="go('campaigns',this)"><span class="nav-icon">🎯</span>Campaign Data</button>
+    <button class="nav-btn" onclick="go('ga',this)"><span class="nav-icon">📈</span>Google Analytics</button>
+    <button class="nav-btn" onclick="go('framework',this)"><span class="nav-icon">🧩</span>Core Four</button>
+
+    <div class="nav-section">الإعدادات</div>
+    <button class="nav-btn" onclick="go('setup',this)"><span class="nav-icon">⚙️</span>Setup<span class="nav-badge" id="conn-count">0/4</span></button>
+    <button class="nav-btn" onclick="go('chat',this)"><span class="nav-icon">💬</span>AI Chat</button>
+  </div>
+
+  <div class="sidebar-bottom">
+    <button class="report-btn" onclick="openRpt()">📋 توليد ريبورت PDF</button>
+  </div>
 </nav>
 
+<!-- ═══ MAIN ═══ -->
 <main class="main">
-<div class="topbar">
-  <div><div class="page-title" id="pgT">داشبورد الاداء</div><div class="page-sub" id="pgS">نظرة شاملة على الحملات</div></div>
-  <div style="display:flex;gap:7px">
-    <button class="btn btn-g" onclick="go('chat',null)">💬 Chat</button>
-    <button class="btn btn-p" onclick="mainAct()">✨ تحليل ذكي</button>
-  </div>
-</div>
 
-<!-- DASHBOARD -->
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pgT">داشبورد الأداء</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="api-bar" id="apiBar">
+        <span class="api-tag">AI KEY</span>
+        <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." oninput="checkKey()">
+        <span id="keyStatus" style="font-size:10px;color:var(--muted)">—</span>
+      </div>
+      <button class="btn btn-ghost" onclick="go('chat',null)" style="padding:8px 14px;font-size:11px">💬 Chat</button>
+      <button class="btn btn-primary" onclick="mainAct()" style="padding:8px 16px;font-size:11px">✨ تحليل ذكي</button>
+    </div>
+  </div>
+
+  <div class="content">
+<div id="sec-dashboard" class="sec active">
 <div id="sec-dashboard" class="sec active">
   <div class="kpi-grid">
     <div class="kpi"><div class="kpi-l">الانفاق</div><div class="kpi-v" id="k-spend">$3,495</div></div>
@@ -221,6 +1093,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 </div>
 
 <!-- FUNNEL -->
+</div>
+<div id="sec-funnel" class="sec">
 <div id="sec-funnel" class="sec">
   <div class="card">
     <div class="card-title">Customer Funnel</div>
@@ -241,6 +1115,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 </div>
 
 <!-- MEDIA PLAN -->
+</div>
+<div id="sec-mediaplan" class="sec">
 <div id="sec-mediaplan" class="sec">
 <style>
 .mp-table{width:100%;border-collapse:collapse;font-size:11px}
@@ -336,6 +1212,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 <!-- END MEDIA PLAN -->
 
 <!-- ROAS CALCULATOR -->
+</div>
+<div id="sec-calculator" class="sec">
 <div id="sec-calculator" class="sec">
 <style>
 .calc-section{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:10px}
@@ -512,124 +1390,149 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 
 <!-- DPT TRACKER -->
 <div id="sec-dpt" class="sec">
-<style>
-.dpt-plat-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
-.dpt-plat-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.dpt-plat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.dpt-plat-name{font-size:13px;font-weight:600;color:var(--text)}
-.dpt-calc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
-.dpt-calc-box{background:var(--s3);border-radius:7px;padding:8px;text-align:center}
-.dpt-calc-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px}
-.dpt-calc-val{font-size:14px;font-weight:700;font-family:var(--mono)}
-.dpt-total-kpi{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(124,92,255,.08));border:1px solid rgba(88,166,255,.2);border-radius:9px;padding:12px;text-align:center}
-.dpt-total-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
-.dpt-total-val{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--accent)}
-.dpt-target-card{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:14px}
-.dpt-prog-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin:6px 0}
-.dpt-prog-bar{height:100%;border-radius:3px;transition:width .5s}
-/* Daily table */
-.day-tbl{width:100%;border-collapse:collapse;font-size:11px}
-.day-tbl th{padding:5px 7px;text-align:right;font-size:9px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);background:var(--s2);white-space:nowrap}
-.day-tbl td{padding:4px 6px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap}
-.day-tbl tr:hover td{background:rgba(255,255,255,.02)}
-.day-tbl tr.today-row td{background:rgba(88,166,255,.06)}
-.di{width:60px;background:var(--s2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;padding:3px 5px;text-align:center;font-family:var(--mono)}
-.di:focus{border-color:var(--accent);outline:none}
-.plat-tabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
-.plat-tab{padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);font-family:var(--font);transition:all .15s}
-.plat-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(88,166,255,.08)}
-</style>
 
-<!-- HEADER -->
-<div class="card" style="background:linear-gradient(135deg,rgba(63,185,80,.08),rgba(88,166,255,.08));border-color:rgba(63,185,80,.2);margin-bottom:10px">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-    <div>
-      <div style="font-size:15px;font-weight:600">📅 Daily Performance Tracker</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">أدخل بيانات كل يوم لكل منصة</div>
-    </div>
-    <div style="display:flex;gap:6px;align-items:center">
-      <select id="dpt-month2" onchange="initDPT()" style="font-size:11px;padding:5px 8px;width:auto">
-        <option value="1">يناير</option><option value="2">فبراير</option><option value="3">مارس</option>
-        <option value="4">أبريل</option><option value="5">مايو</option><option value="6">يونيو</option>
-        <option value="7">يوليو</option><option value="8">أغسطس</option><option value="9">سبتمبر</option>
-        <option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option>
-      </select>
-      <input type="number" id="dpt-year2" value="2025" style="width:72px;font-size:11px;padding:5px" oninput="initDPT()">
-    </div>
+<!-- ══ HEADER ══ -->
+<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+  <div>
+    <div style="font-family:var(--display);font-size:22px;font-weight:800;color:var(--text)">Daily Performance Tracker</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:3px">تتبع يومي ذكي — بيانات حقيقية من المنصات + تحليل تلقائي</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <select id="dpt-month2" onchange="initDPT()" style="width:auto;font-size:11px;padding:7px 10px">
+      <option value="1">يناير</option><option value="2">فبراير</option><option value="3">مارس</option>
+      <option value="4">أبريل</option><option value="5">مايو</option><option value="6">يونيو</option>
+      <option value="7">يوليو</option><option value="8">أغسطس</option><option value="9">سبتمبر</option>
+      <option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option>
+    </select>
+    <input type="number" id="dpt-year2" value="2025" style="width:75px;font-size:11px;padding:7px" oninput="initDPT()">
+    <button class="btn btn-primary" onclick="syncDPTFromAPIs()" style="font-size:11px;padding:8px 14px">
+      ⚡ سحب من APIs
+    </button>
   </div>
 </div>
 
-<!-- TARGETS -->
-<div class="card" style="margin-bottom:10px">
-  <div class="card-title">🎯 Monthly Target</div>
+<!-- ══ TARGETS ══ -->
+<div class="card card-accent" style="margin-bottom:14px">
+  <div class="card-title">🎯 الهدف الشهري</div>
   <div class="g4">
-    <div><label class="fl">Revenue Target $</label><input type="number" id="dpt-t-rev" placeholder="200000" oninput="calcDPT2()"></div>
-    <div><label class="fl">Spent Target $</label><input type="number" id="dpt-t-spent" placeholder="10000" oninput="calcDPT2()"></div>
+    <div><label class="fl">Revenue Target ($)</label><input type="number" id="dpt-t-rev" placeholder="200000" oninput="calcDPT2()"></div>
+    <div><label class="fl">Spent Budget ($)</label><input type="number" id="dpt-t-spent" placeholder="10000" oninput="calcDPT2()"></div>
     <div><label class="fl">Orders Target</label><input type="number" id="dpt-t-orders" placeholder="1000" oninput="calcDPT2()"></div>
-    <div><label class="fl">ROAS Target</label><input type="number" id="dpt-t-roas" placeholder="4" value="4" oninput="calcDPT2()"></div>
+    <div><label class="fl">Target ROAS</label><input type="number" id="dpt-t-roas" value="4" oninput="calcDPT2()"></div>
   </div>
 </div>
 
-<!-- PLATFORM TABS -->
-<div class="card" style="margin-bottom:10px">
-  <div class="plat-tabs">
-    <button class='plat-tab active' onclick="switchDPTPlat('meta',this)"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Meta</button>
-    <button class='plat-tab' onclick="switchDPTPlat('google',this)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
-    <button class='plat-tab' onclick="switchDPTPlat('snap',this)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg> Snapchat</button>
-    <button class='plat-tab' onclick="switchDPTPlat('tiktok',this)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg> TikTok</button>
+<!-- ══ PLATFORM TABS ══ -->
+<div class="card" style="margin-bottom:14px;padding:14px">
+  <div class="dpt-plat-tabs">
+    <button class="dpt-tab active" onclick="switchDPTPlat('meta',this)"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Meta</button>
+    <button class="dpt-tab" onclick="switchDPTPlat('google',this)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</button>
+    <button class="dpt-tab" onclick="switchDPTPlat('snap',this)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg> Snapchat</button>
+    <button class="dpt-tab" onclick="switchDPTPlat('tiktok',this)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg> TikTok</button>
+    <button class="dpt-tab" onclick="switchDPTPlat('total',this)" style="margin-right:auto;background:rgba(99,102,241,.1);color:var(--accent2)">📊 الإجمالي</button>
   </div>
 
-  <!-- Each platform daily table -->
-  <div id="dpt-plat-meta" class="dpt-plat-view">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:600;color:var(--text)"><span style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Meta</span> — إدخال يومي</div>
-      <div id="dpt-meta-summary" style="font-size:11px;color:var(--muted)"></div>
+  <!-- Sync status -->
+  <div id="dpt-sync-status" style="font-size:11px;color:var(--muted);min-height:16px;margin-bottom:10px"></div>
+
+  <!-- Platform views -->
+  <div id="dpt-plat-meta" class="dpt-view active">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:var(--text)"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Meta Ads — إدخال يومي</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="dpt-meta-summary" style="font-size:11px;color:var(--muted)"></div>
+        <button onclick="syncPlatform('meta')" class="btn btn-ghost" style="font-size:10px;padding:4px 10px">⚡ سحب</button>
+      </div>
     </div>
     <div class="tbl-wrap"><table class="day-tbl" id="dpt-meta-tbl"></table></div>
-    <div class="dpt-calc-grid" id="dpt-meta-calcs"></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px" id="dpt-meta-calcs"></div>
   </div>
 
-  <div id="dpt-plat-google" class="dpt-plat-view" style="display:none">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:600;color:var(--text)"><span style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google</span> — إدخال يومي</div>
-      <div id="dpt-google-summary" style="font-size:11px;color:var(--muted)"></div>
+  <div id="dpt-plat-google" class="dpt-view" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:var(--text)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Google Ads — إدخال يومي</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="dpt-google-summary" style="font-size:11px;color:var(--muted)"></div>
+        <button onclick="syncPlatform('google')" class="btn btn-ghost" style="font-size:10px;padding:4px 10px">⚡ سحب</button>
+      </div>
     </div>
     <div class="tbl-wrap"><table class="day-tbl" id="dpt-google-tbl"></table></div>
-    <div class="dpt-calc-grid" id="dpt-google-calcs"></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px" id="dpt-google-calcs"></div>
   </div>
 
-  <div id="dpt-plat-snap" class="dpt-plat-view" style="display:none">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:600;color:var(--text)"><span style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533.083.023.188.05.317.077.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06.008 0 .016 0 .024-.001.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252.13-.027.234-.054.317-.077.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg> Snapchat</span> — إدخال يومي</div>
+  <div id="dpt-plat-snap" class="dpt-view" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:var(--text)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg> Snapchat — إدخال يومي</div>
       <div id="dpt-snap-summary" style="font-size:11px;color:var(--muted)"></div>
     </div>
     <div class="tbl-wrap"><table class="day-tbl" id="dpt-snap-tbl"></table></div>
-    <div class="dpt-calc-grid" id="dpt-snap-calcs"></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px" id="dpt-snap-calcs"></div>
   </div>
 
-  <div id="dpt-plat-tiktok" class="dpt-plat-view" style="display:none">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:600;color:var(--text)"><span style="display:inline-flex;align-items:center;gap:5px"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg> TikTok</span> — إدخال يومي</div>
+  <div id="dpt-plat-tiktok" class="dpt-view" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:var(--text)"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg> TikTok Ads — إدخال يومي</div>
       <div id="dpt-tiktok-summary" style="font-size:11px;color:var(--muted)"></div>
     </div>
     <div class="tbl-wrap"><table class="day-tbl" id="dpt-tiktok-tbl"></table></div>
-    <div class="dpt-calc-grid" id="dpt-tiktok-calcs"></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px" id="dpt-tiktok-calcs"></div>
+  </div>
+
+  <!-- TOTAL VIEW -->
+  <div id="dpt-plat-total" class="dpt-view" style="display:none">
+    <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px">📊 ملخص كل المنصات</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px" id="dpt-total-row"></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px" id="dpt-total-extra"></div>
   </div>
 </div>
 
-<!-- TOTAL SUMMARY -->
-<div class="card" style="border-color:rgba(88,166,255,.3)">
-  <div class="card-title" style="color:var(--accent)">📊 الإجمالي — كل المنصات</div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px" id="dpt-total-row"></div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px" id="dpt-total-extra"></div>
-  <div class="card-title">📈 التتبع الشهري</div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="dpt-tracking"></div>
+<!-- ══ SMART PROGRESS STRIP ══ -->
+<div class="card" style="padding:20px">
+  <div class="card-title">📈 شريط التقدم الشهري</div>
+
+  <!-- Progress bars -->
+  <div id="dpt-tracking" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px"></div>
+
+  <!-- Daily pace indicator -->
+  <div style="background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px" id="dpt-pace-box">
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">⚡ Daily Run Rate</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="dpt-pace-grid"></div>
+  </div>
+
+  <!-- Visual calendar heatmap -->
+  <div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🗓️ Revenue Heatmap</div>
+    <div id="dpt-heatmap" style="display:flex;flex-wrap:wrap;gap:4px"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:10px;color:var(--muted)">
+      <span>أقل</span>
+      <div style="display:flex;gap:2px">
+        <div style="width:10px;height:10px;border-radius:2px;background:rgba(99,102,241,.1)"></div>
+        <div style="width:10px;height:10px;border-radius:2px;background:rgba(99,102,241,.25)"></div>
+        <div style="width:10px;height:10px;border-radius:2px;background:rgba(99,102,241,.5)"></div>
+        <div style="width:10px;height:10px;border-radius:2px;background:rgba(99,102,241,.75)"></div>
+        <div style="width:10px;height:10px;border-radius:2px;background:#6366F1"></div>
+      </div>
+      <span>أكثر</span>
+    </div>
+  </div>
+
+  <!-- AI Analysis -->
+  <div style="margin-top:14px">
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px" onclick="analyzeDPTSmart()">
+      ✨ تحليل ذكي للأداء مقارنةً بالهدف
+    </button>
+    <div id="dpt-ai-box" style="display:none;margin-top:10px">
+      <div class="ai-box" id="dpt-ai-content"></div>
+    </div>
+  </div>
 </div>
 
 </div>
 <!-- END DPT -->
 
 <!-- LEADERBOARD -->
+</div>
+<div id="sec-leaderboard" class="sec">
 <div id="sec-leaderboard" class="sec">
 <style>
 .lb-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
@@ -741,6 +1644,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 <!-- END LEADERBOARD -->
 
 <!-- CREATIVE -->
+</div>
+<div id="sec-creative" class="sec">
 <div id="sec-creative" class="sec">
   <div class="g2">
     <div>
@@ -772,6 +1677,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 </div>
 
 <!-- CAMPAIGNS -->
+</div>
+<div id="sec-campaigns" class="sec">
 <div id="sec-campaigns" class="sec">
   <div class="card" style="border-color:rgba(88,166,255,0.25)">
     <div class="card-title" style="color:var(--accent)"><svg viewBox="0 0 24 24" width="14" height="14" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Meta Ads API — بيانات مباشرة</div>
@@ -845,166 +1752,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 </div>
 
 <!-- SETUP -->
-<div id="sec-setup" class="sec">
-<style>
-.conn-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .2s}
-.conn-card.connected{border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.03)}
-.conn-card.error{border-color:rgba(248,81,73,.4)}
-.conn-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.conn-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.conn-name{font-size:14px;font-weight:600;color:var(--text)}
-.conn-desc{font-size:11px;color:var(--muted);margin-top:2px}
-.conn-status{margin-right:auto;font-size:11px}
-.oauth-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:all .2s}
-.oauth-btn:hover{opacity:.88;transform:translateY(-1px)}
-.conn-info{background:var(--s3);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:10px}
-.conn-info strong{color:var(--text)}
-.acc-select{margin-top:10px;display:none}
-.status-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.status-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid}
-.sp-conn{background:rgba(63,185,80,.1);color:var(--green);border-color:rgba(63,185,80,.3)}
-.sp-disc{background:rgba(255,255,255,.04);color:var(--muted);border-color:var(--border)}
-</style>
-
-<!-- HEADER -->
-<div class="card" style="background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(124,92,255,.08));border-color:rgba(88,166,255,.2);margin-bottom:12px">
-  <div style="display:flex;align-items:center;gap:14px">
-    <div style="font-size:36px">🔗</div>
-    <div>
-      <div style="font-size:16px;font-weight:600">ربط المنصات الإعلانية</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">اربط حساباتك بضغطة زر واحدة — بدون نسخ tokens يدوياً</div>
-    </div>
-  </div>
 </div>
-
-<!-- STATUS BAR -->
-<div class="status-bar" id="setup-status-bar">
-  <div class="status-pill sp-disc" id="sp-meta">📘 Meta — غير مربوط</div>
-  <div class="status-pill sp-disc" id="sp-snap">👻 Snapchat — غير مربوط</div>
-  <div class="status-pill sp-disc" id="sp-tiktok">🎵 TikTok — غير مربوط</div>
-  <div class="status-pill sp-disc" id="sp-google">📈 GA4 — غير مربوط</div>
-</div>
-
-<!-- PLATFORMS GRID -->
-<div class="g2" style="gap:12px">
-
-<!-- META -->
-<div class="conn-card" id="card-meta">
-  <div class="conn-head">
-    <div class="conn-icon" style="background:rgba(24,119,242,.15)"><svg viewBox="0 0 24 24" width="22" height="22" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
-    <div>
-      <div class="conn-name">Meta Ads</div>
-      <div class="conn-desc">Facebook & Instagram Ads</div>
-    </div>
-    <div class="conn-status" id="st-meta">
-      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
-    </div>
-  </div>
-  <button class="oauth-btn" style="background:#1877F2;color:#fff" onclick="connectMeta()" id="btn-meta">
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> تسجيل الدخول بـ Facebook
-  </button>
-  <div id="meta-accounts" class="acc-select">
-    <label class="fl">اختر Ad Account</label>
-    <select id="meta-acc-select" onchange="selectMetaAccount(this.value)" style="margin-top:4px">
-      <option value="">اختر...</option>
-    </select>
-  </div>
-  <div class="conn-info">
-    <strong>الصلاحيات المطلوبة:</strong> ads_read, ads_management<br>
-    <strong>البيانات:</strong> Campaigns, Ad Sets, Ads, Insights كاملة
-  </div>
-</div>
-
-<!-- SNAPCHAT -->
-<div class="conn-card" id="card-snap">
-  <div class="conn-head">
-    <div class="conn-icon" style="background:rgba(255,252,0,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg></div>
-    <div>
-      <div class="conn-name">Snapchat Ads</div>
-      <div class="conn-desc">Snapchat Marketing API</div>
-    </div>
-    <div class="conn-status" id="st-snap">
-      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
-    </div>
-  </div>
-  <button class="oauth-btn" style="background:#FFFC00;color:#000" onclick="connectSnap()" id="btn-snap">
-    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg> تسجيل الدخول بـ Snapchat
-  </button>
-  <div class="conn-info">
-    <strong>ملاحظة:</strong> يحتاج موافقة Snapchat Marketing API<br>
-    <strong>البيانات:</strong> Campaigns, Ad Squads, Ads, Stats
-  </div>
-</div>
-
-<!-- TIKTOK -->
-<div class="conn-card" id="card-tiktok">
-  <div class="conn-head">
-    <div class="conn-icon" style="background:rgba(255,0,80,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg></div>
-    <div>
-      <div class="conn-name">TikTok Ads</div>
-      <div class="conn-desc">TikTok for Business API</div>
-    </div>
-    <div class="conn-status" id="st-tiktok">
-      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
-    </div>
-  </div>
-  <button class="oauth-btn" style="background:#FF0050;color:#fff" onclick="connectTikTok()" id="btn-tiktok">
-    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg> تسجيل الدخول بـ TikTok
-  </button>
-  <div class="conn-info">
-    <strong>ملاحظة:</strong> يحتاج TikTok Business API Access<br>
-    <strong>البيانات:</strong> Campaigns, Ad Groups, Ads, Reports
-  </div>
-</div>
-
-<!-- GOOGLE ANALYTICS -->
-<div class="conn-card" id="card-ga">
-  <div class="conn-head">
-    <div class="conn-icon" style="background:rgba(234,67,53,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></div>
-    <div>
-      <div class="conn-name">Google Analytics 4</div>
-      <div class="conn-desc">GA4 Data API — Service Account</div>
-    </div>
-    <div class="conn-status" id="st-ga">
-      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
-    </div>
-  </div>
-  <div style="margin-bottom:10px">
-    <label class="fl">Property ID</label>
-    <input type="text" id="ga-prop-setup" placeholder="317096886" oninput="testGA()">
-    <div style="font-size:10px;color:var(--muted);margin-top:3px">من GA4 → Admin → Property Settings → Property ID</div>
-  </div>
-  <button class="oauth-btn" style="background:#4285F4;color:#fff" onclick="testGA()" id="btn-ga">
-    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> اختبار الاتصال
-  </button>
-  <div class="conn-info" id="ga-setup-info">
-    <strong>Service Account:</strong> محفوظ على السيرفر ✅<br>
-    <strong>البيانات:</strong> Sessions, Users, Revenue, Funnel, Channels
-  </div>
-</div>
-
-</div>
-
-<!-- AI KEY -->
-<div class="card" style="margin-top:12px">
-  <div class="card-title">🤖 OpenRouter AI Key</div>
-  <div class="g2">
-    <div>
-      <label class="fl">API Key</label>
-      <input type="password" id="s-or-key" placeholder="sk-or-v1-..." oninput="syncORKey()">
-      <div style="font-size:10px;color:var(--muted);margin-top:3px">من <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent)">openrouter.ai/keys</a> — مجاني</div>
-    </div>
-    <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:6px">
-      <button class="btn btn-p" onclick="saveORKey()">💾 حفظ</button>
-      <div id="or-key-status" style="font-size:11px;min-height:16px"></div>
-    </div>
-  </div>
-</div>
-
-</div>
-<!-- END SETUP -->
-
-<!-- GOOGLE ANALYTICS -->
+<div id="sec-ga" class="sec">
 <div id="sec-ga" class="sec">
 <style>
 .ga-tabs{display:flex;gap:4px;background:var(--s2);padding:6px;border-radius:10px;margin-bottom:14px;flex-wrap:wrap}
@@ -1194,6 +1943,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 <!-- END GA -->
 
 <!-- FRAMEWORK -->
+</div>
+<div id="sec-framework" class="sec">
 <div id="sec-framework" class="sec">
   <div class="card">
     <div class="card-title">🧩 Core Four — Depesh Mandalia</div>
@@ -1213,6 +1964,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 </div>
 
 <!-- CHAT -->
+</div>
+<div id="sec-chat" class="sec">
 <div id="sec-chat" class="sec">
   <div class="g2" style="gap:12px">
     <div class="chat-wrap">
@@ -1246,11 +1999,175 @@ tr:hover td{background:rgba(255,255,255,0.015)}
     </div>
   </div>
 </div>
+</div>
+<div id="sec-setup" class="sec">
+<div id="sec-setup" class="sec">
+<style>
+.conn-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .2s}
+.conn-card.connected{border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.03)}
+.conn-card.error{border-color:rgba(248,81,73,.4)}
+.conn-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.conn-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.conn-name{font-size:14px;font-weight:600;color:var(--text)}
+.conn-desc{font-size:11px;color:var(--muted);margin-top:2px}
+.conn-status{margin-right:auto;font-size:11px}
+.oauth-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:all .2s}
+.oauth-btn:hover{opacity:.88;transform:translateY(-1px)}
+.conn-info{background:var(--s3);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:10px}
+.conn-info strong{color:var(--text)}
+.acc-select{margin-top:10px;display:none}
+.status-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.status-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid}
+.sp-conn{background:rgba(63,185,80,.1);color:var(--green);border-color:rgba(63,185,80,.3)}
+.sp-disc{background:rgba(255,255,255,.04);color:var(--muted);border-color:var(--border)}
+</style>
 
-</main>
+<!-- HEADER -->
+<div class="card" style="background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(124,92,255,.08));border-color:rgba(88,166,255,.2);margin-bottom:12px">
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="font-size:36px">🔗</div>
+    <div>
+      <div style="font-size:16px;font-weight:600">ربط المنصات الإعلانية</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">اربط حساباتك بضغطة زر واحدة — بدون نسخ tokens يدوياً</div>
+    </div>
+  </div>
 </div>
 
+<!-- STATUS BAR -->
+<div class="status-bar" id="setup-status-bar">
+  <div class="status-pill sp-disc" id="sp-meta">📘 Meta — غير مربوط</div>
+  <div class="status-pill sp-disc" id="sp-snap">👻 Snapchat — غير مربوط</div>
+  <div class="status-pill sp-disc" id="sp-tiktok">🎵 TikTok — غير مربوط</div>
+  <div class="status-pill sp-disc" id="sp-google">📈 GA4 — غير مربوط</div>
+</div>
+
+<!-- PLATFORMS GRID -->
+<div class="g2" style="gap:12px">
+
+<!-- META -->
+<div class="conn-card" id="card-meta">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(24,119,242,.15)"><svg viewBox="0 0 24 24" width="22" height="22" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+    <div>
+      <div class="conn-name">Meta Ads</div>
+      <div class="conn-desc">Facebook & Instagram Ads</div>
+    </div>
+    <div class="conn-status" id="st-meta">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
+    </div>
+  </div>
+  <button class="oauth-btn" style="background:#1877F2;color:#fff" onclick="connectMeta()" id="btn-meta">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> تسجيل الدخول بـ Facebook
+  </button>
+  <div id="meta-accounts" class="acc-select">
+    <label class="fl">اختر Ad Account</label>
+    <select id="meta-acc-select" onchange="selectMetaAccount(this.value)" style="margin-top:4px">
+      <option value="">اختر...</option>
+    </select>
+  </div>
+  <div class="conn-info">
+    <strong>الصلاحيات المطلوبة:</strong> ads_read, ads_management<br>
+    <strong>البيانات:</strong> Campaigns, Ad Sets, Ads, Insights كاملة
+  </div>
+</div>
+
+<!-- SNAPCHAT -->
+<div class="conn-card" id="card-snap">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(255,252,0,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg></div>
+    <div>
+      <div class="conn-name">Snapchat Ads</div>
+      <div class="conn-desc">Snapchat Marketing API</div>
+    </div>
+    <div class="conn-status" id="st-snap">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
+    </div>
+  </div>
+  <button class="oauth-btn" style="background:#FFFC00;color:#000" onclick="connectSnap()" id="btn-snap">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg> تسجيل الدخول بـ Snapchat
+  </button>
+  <div class="conn-info">
+    <strong>ملاحظة:</strong> يحتاج موافقة Snapchat Marketing API<br>
+    <strong>البيانات:</strong> Campaigns, Ad Squads, Ads, Stats
+  </div>
+</div>
+
+<!-- TIKTOK -->
+<div class="conn-card" id="card-tiktok">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(255,0,80,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg></div>
+    <div>
+      <div class="conn-name">TikTok Ads</div>
+      <div class="conn-desc">TikTok for Business API</div>
+    </div>
+    <div class="conn-status" id="st-tiktok">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
+    </div>
+  </div>
+  <button class="oauth-btn" style="background:#FF0050;color:#fff" onclick="connectTikTok()" id="btn-tiktok">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg> تسجيل الدخول بـ TikTok
+  </button>
+  <div class="conn-info">
+    <strong>ملاحظة:</strong> يحتاج TikTok Business API Access<br>
+    <strong>البيانات:</strong> Campaigns, Ad Groups, Ads, Reports
+  </div>
+</div>
+
+<!-- GOOGLE ANALYTICS -->
+<div class="conn-card" id="card-ga">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(234,67,53,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></div>
+    <div>
+      <div class="conn-name">Google Analytics 4</div>
+      <div class="conn-desc">GA4 Data API — Service Account</div>
+    </div>
+    <div class="conn-status" id="st-ga">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
+    </div>
+  </div>
+  <div style="margin-bottom:10px">
+    <label class="fl">Property ID</label>
+    <input type="text" id="ga-prop-setup" placeholder="317096886" oninput="testGA()">
+    <div style="font-size:10px;color:var(--muted);margin-top:3px">من GA4 → Admin → Property Settings → Property ID</div>
+  </div>
+  <button class="oauth-btn" style="background:#4285F4;color:#fff" onclick="testGA()" id="btn-ga">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> اختبار الاتصال
+  </button>
+  <div class="conn-info" id="ga-setup-info">
+    <strong>Service Account:</strong> محفوظ على السيرفر ✅<br>
+    <strong>البيانات:</strong> Sessions, Users, Revenue, Funnel, Channels
+  </div>
+</div>
+
+</div>
+
+<!-- AI KEY -->
+<div class="card" style="margin-top:12px">
+  <div class="card-title">🤖 OpenRouter AI Key</div>
+  <div class="g2">
+    <div>
+      <label class="fl">API Key</label>
+      <input type="password" id="s-or-key" placeholder="sk-or-v1-..." oninput="syncORKey()">
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">من <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent)">openrouter.ai/keys</a> — مجاني</div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:6px">
+      <button class="btn btn-p" onclick="saveORKey()">💾 حفظ</button>
+      <div id="or-key-status" style="font-size:11px;min-height:16px"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<!-- END SETUP -->
+
+<!-- GOOGLE ANALYTICS -->
+</div>
+  </div><!-- end content -->
+</main>
+</div><!-- end shell -->
+
 <script>
+
 // ══ DATA ══
 var WD = [
   {w:'W9',d:'1 مارس',spend:86,clicks:697,lp:406,atc:68,co:30,pur:3,rev:180,hook:0},
@@ -2856,6 +3773,796 @@ function calcDirect() { calcDirect2(); }
 // ══ DPT TRACKER ══
 var DPT_DATA = { meta:{}, google:{}, snap:{}, tiktok:{} };
 var DPT_CUR_PLAT = 'meta';
+var DPT_SYNCING = false;
+
+function switchDPTPlat(p, el) {
+  document.querySelectorAll('.dpt-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.dpt-view').forEach(function(v){ v.style.display = 'none'; });
+  el.classList.add('active');
+  DPT_CUR_PLAT = p;
+  var view = document.getElementById('dpt-plat-' + p);
+  if (view) view.style.display = 'block';
+}
+
+function initDPT() {
+  var month = +document.getElementById('dpt-month2').value;
+  var year  = +document.getElementById('dpt-year2').value;
+  var days  = new Date(year, month, 0).getDate();
+  var today = new Date();
+  var todayDay = (today.getMonth()+1 === month && today.getFullYear() === year) ? today.getDate() : 0;
+
+  ['meta','google','snap','tiktok'].forEach(function(p) {
+    buildPlatTable(p, month, year, days, todayDay);
+    updatePlatSummary(p, month, year, days);
+  });
+  calcDPT2();
+}
+
+function buildPlatTable(p, month, year, days, todayDay) {
+  var tbl = document.getElementById('dpt-' + p + '-tbl');
+  if (!tbl) return;
+  tbl.innerHTML =
+    '<thead><tr>' +
+    '<th>اليوم</th><th>Revenue $</th><th>Spent $</th><th>Orders</th><th>Clicks</th>' +
+    '<th>ROAS</th><th>AOV</th><th>CPS</th><th>CVR%</th><th>CPC</th><th>المصدر</th>' +
+    '</tr></thead><tbody id="dpt-' + p + '-body"></tbody>';
+
+  var tbody = document.getElementById('dpt-' + p + '-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  for (var d = 1; d <= days; d++) {
+    var key = year + '-' + month + '-' + d;
+    var dd = DPT_DATA[p][key] || { rev:'', spent:'', orders:'', clicks:'', source:'manual' };
+    var isToday = d === todayDay;
+    var isFuture = todayDay > 0 && d > todayDay;
+
+    var rev    = parseFloat(dd.rev)    || 0;
+    var spent  = parseFloat(dd.spent)  || 0;
+    var orders = parseFloat(dd.orders) || 0;
+    var clicks = parseFloat(dd.clicks) || 0;
+
+    var roas  = spent  > 0 ? (rev/spent).toFixed(2)         : '—';
+    var aov   = orders > 0 ? '$'+(rev/orders).toFixed(1)    : '—';
+    var cps   = orders > 0 ? '$'+(spent/orders).toFixed(1)  : '—';
+    var cvr   = clicks > 0 ? (orders/clicks*100).toFixed(2)+'%' : '—';
+    var cpc   = clicks > 0 ? '$'+(spent/clicks).toFixed(2)  : '—';
+
+    var tRoas = +document.getElementById('dpt-t-roas').value || 4;
+    var roasC = roas !== '—' ? (parseFloat(roas) >= tRoas ? 'var(--green)' : parseFloat(roas) >= tRoas*0.7 ? 'var(--amber)' : 'var(--red)') : 'var(--muted)';
+
+    var srcIcon = dd.source === 'api' ? '<span style="color:var(--green);font-size:9px">⚡ API</span>' : '<span style="color:var(--muted2);font-size:9px">✍️</span>';
+
+    var tr = document.createElement('tr');
+    if (isToday)  tr.className = 'today-row';
+    tr.style.opacity = isFuture ? '0.35' : '1';
+
+    tr.innerHTML =
+      '<td style="font-weight:700;color:' + (isToday ? 'var(--accent2)' : 'var(--muted)') + ';font-size:10px">' +
+        d + (isToday ? ' ★' : '') +
+      '</td>' +
+      '<td><input class="di" type="number" placeholder="—" value="' + (dd.rev||'') + '" ' +
+        'data-p="' + p + '" data-k="' + key + '" data-f="rev" onchange="dptChange(this)"></td>' +
+      '<td><input class="di" type="number" placeholder="—" value="' + (dd.spent||'') + '" ' +
+        'data-p="' + p + '" data-k="' + key + '" data-f="spent" onchange="dptChange(this)"></td>' +
+      '<td><input class="di" type="number" placeholder="—" value="' + (dd.orders||'') + '" ' +
+        'data-p="' + p + '" data-k="' + key + '" data-f="orders" onchange="dptChange(this)"></td>' +
+      '<td><input class="di" type="number" placeholder="—" value="' + (dd.clicks||'') + '" ' +
+        'data-p="' + p + '" data-k="' + key + '" data-f="clicks" onchange="dptChange(this)"></td>' +
+      '<td style="font-weight:700;color:' + roasC + '">' + roas + (roas!=='—'?'x':'') + '</td>' +
+      '<td style="color:var(--muted)">' + aov + '</td>' +
+      '<td style="color:var(--muted)">' + cps + '</td>' +
+      '<td style="color:var(--muted)">' + cvr + '</td>' +
+      '<td style="color:var(--muted)">' + cpc + '</td>' +
+      '<td>' + srcIcon + '</td>';
+
+    tbody.appendChild(tr);
+  }
+}
+
+function dptChange(el) {
+  var p = el.dataset.p, k = el.dataset.k, f = el.dataset.f;
+  if (!DPT_DATA[p][k]) DPT_DATA[p][k] = { rev:'', spent:'', orders:'', clicks:'', source:'manual' };
+  DPT_DATA[p][k][f] = el.value;
+  DPT_DATA[p][k].source = 'manual';
+
+  var month = +document.getElementById('dpt-month2').value;
+  var year  = +document.getElementById('dpt-year2').value;
+  var days  = new Date(year, month, 0).getDate();
+
+  // Update computed cells in same row
+  var row = el.closest('tr');
+  if (row) {
+    var cells = row.querySelectorAll('td');
+    var dd = DPT_DATA[p][k];
+    var rev=parseFloat(dd.rev)||0, spent=parseFloat(dd.spent)||0;
+    var orders=parseFloat(dd.orders)||0, clicks=parseFloat(dd.clicks)||0;
+    var tRoas = +document.getElementById('dpt-t-roas').value || 4;
+    var roas = spent>0?(rev/spent).toFixed(2):'—';
+    var roasC = roas!=='—'?(parseFloat(roas)>=tRoas?'var(--green)':parseFloat(roas)>=tRoas*0.7?'var(--amber)':'var(--red)'):'var(--muted)';
+    if(cells[5]){cells[5].textContent=roas+(roas!=='—'?'x':'');cells[5].style.color=roasC;}
+    if(cells[6]) cells[6].textContent=orders>0?'$'+(rev/orders).toFixed(1):'—';
+    if(cells[7]) cells[7].textContent=orders>0?'$'+(spent/orders).toFixed(1):'—';
+    if(cells[8]) cells[8].textContent=clicks>0?(orders/clicks*100).toFixed(2)+'%':'—';
+    if(cells[9]) cells[9].textContent=clicks>0?'$'+(spent/clicks).toFixed(2):'—';
+  }
+
+  updatePlatSummary(p, month, year, days);
+  calcDPT2();
+}
+
+function updatePlatSummary(p, month, year, days) {
+  var tot = { rev:0, spent:0, orders:0, clicks:0 };
+  for (var d=1; d<=days; d++) {
+    var key = year+'-'+month+'-'+d;
+    var dd = DPT_DATA[p][key] || {};
+    tot.rev    += parseFloat(dd.rev)    || 0;
+    tot.spent  += parseFloat(dd.spent)  || 0;
+    tot.orders += parseFloat(dd.orders) || 0;
+    tot.clicks += parseFloat(dd.clicks) || 0;
+  }
+  var tRoas = +document.getElementById('dpt-t-roas').value || 4;
+  var roas = tot.spent>0?(tot.rev/tot.spent).toFixed(2):0;
+  var aov  = tot.orders>0?(tot.rev/tot.orders).toFixed(2):0;
+  var cps  = tot.orders>0?(tot.spent/tot.orders).toFixed(2):0;
+  var cvr  = tot.clicks>0?(tot.orders/tot.clicks*100).toFixed(2):0;
+  var cpc  = tot.clicks>0?(tot.spent/tot.clicks).toFixed(2):0;
+  var rc   = parseFloat(roas)>=tRoas?'var(--green)':parseFloat(roas)>=tRoas*0.7?'var(--amber)':'var(--red)';
+
+  var sum = document.getElementById('dpt-'+p+'-summary');
+  if (sum) sum.innerHTML =
+    '<span style="color:'+rc+';font-weight:700">ROAS '+roas+'x</span>' +
+    ' | <span style="color:var(--green)">$'+tot.rev.toFixed(0)+'</span>' +
+    ' | <span style="color:var(--muted)">$'+tot.spent.toFixed(0)+' spent</span>';
+
+  var calcs = document.getElementById('dpt-'+p+'-calcs');
+  if (calcs) calcs.innerHTML = [
+    {l:'ROAS', v:roas+'x', c:rc},
+    {l:'AOV',  v:'$'+aov,  c:'var(--text)'},
+    {l:'CPS',  v:'$'+cps,  c:'var(--text)'},
+    {l:'CVR',  v:cvr+'%',  c:parseFloat(cvr)>1?'var(--green)':parseFloat(cvr)>0.5?'var(--amber)':'var(--red)'},
+    {l:'CPC',  v:'$'+cpc,  c:'var(--text)'}
+  ].map(function(k){
+    return '<div class="res-box"><div class="res-lbl">'+k.l+'</div><div class="res-val" style="font-size:14px;color:'+k.c+'">'+k.v+'</div></div>';
+  }).join('');
+
+  return tot;
+}
+
+// ── Smart Sync from APIs ──
+async function syncDPTFromAPIs() {
+  var st = document.getElementById('dpt-sync-status');
+  var month = +document.getElementById('dpt-month2').value;
+  var year  = +document.getElementById('dpt-year2').value;
+
+  st.innerHTML = '<span class="spin">↻</span> جاري السحب من المنصات...';
+  st.style.color = 'var(--accent2)';
+
+  var synced = [];
+
+  // Try Meta
+  var metaToken = document.getElementById('m-token').value.trim();
+  var metaAcc   = document.getElementById('m-acc').value.trim().replace('act_', '');
+  if (metaToken && metaAcc) {
+    try {
+      await syncMetaDPT(metaToken, metaAcc, month, year);
+      synced.push('Meta ✅');
+    } catch(e) { synced.push('Meta ❌'); }
+  }
+
+  // Try GA4 for Google data
+  var gaProp = document.getElementById('ga-prop').value.trim();
+  if (gaProp) {
+    try {
+      await syncGoogleDPT(gaProp, month, year);
+      synced.push('Google Analytics ✅');
+    } catch(e) { synced.push('Google ❌'); }
+  }
+
+  if (synced.length === 0) {
+    st.innerHTML = '⚠️ لا توجد منصات مربوطة — اذهب لـ Setup للربط أولاً';
+    st.style.color = 'var(--amber)';
+  } else {
+    st.innerHTML = '✅ تم السحب: ' + synced.join(' | ') + ' — البيانات محدّثة';
+    st.style.color = 'var(--green)';
+    initDPT();
+  }
+}
+
+async function syncPlatform(plat) {
+  var st = document.getElementById('dpt-sync-status');
+  var month = +document.getElementById('dpt-month2').value;
+  var year  = +document.getElementById('dpt-year2').value;
+
+  st.innerHTML = '<span class="spin">↻</span> جاري سحب بيانات ' + plat + '...';
+  st.style.color = 'var(--accent2)';
+
+  try {
+    if (plat === 'meta') {
+      var token = document.getElementById('m-token').value.trim();
+      var acc   = document.getElementById('m-acc').value.trim().replace('act_','');
+      if (!token || !acc) { st.innerHTML = '⚠️ ادخل Meta Token وAccount ID في Campaign Data أولاً'; st.style.color='var(--amber)'; return; }
+      await syncMetaDPT(token, acc, month, year);
+      st.innerHTML = '✅ Meta — تم السحب بنجاح'; st.style.color = 'var(--green)';
+    } else if (plat === 'google') {
+      var prop = document.getElementById('ga-prop').value.trim();
+      if (!prop) { st.innerHTML = '⚠️ ادخل GA4 Property ID في Google Analytics أولاً'; st.style.color='var(--amber)'; return; }
+      await syncGoogleDPT(prop, month, year);
+      st.innerHTML = '✅ Google — تم السحب بنجاح'; st.style.color = 'var(--green)';
+    } else {
+      st.innerHTML = '⚠️ ' + plat + ' — يحتاج API Access (راجع Setup)'; st.style.color = 'var(--amber)'; return;
+    }
+    initDPT();
+  } catch(e) {
+    st.innerHTML = '❌ خطأ: ' + e.message; st.style.color = 'var(--red)';
+  }
+}
+
+async function syncMetaDPT(token, acc, month, year) {
+  var since = year + '-' + String(month).padStart(2,'0') + '-01';
+  var lastDay = new Date(year, month, 0).getDate();
+  var until = year + '-' + String(month).padStart(2,'0') + '-' + String(lastDay).padStart(2,'0');
+
+  var fields = 'spend,actions,action_values,clicks,date_start';
+  var url = 'https://graph.facebook.com/v19.0/act_' + acc +
+    '/insights?fields=' + encodeURIComponent(fields) +
+    '&level=account&time_range=' + encodeURIComponent(JSON.stringify({since,until})) +
+    '&time_increment=1&access_token=' + token;
+
+  var res = await fetch(url);
+  var data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+
+  var rows = data.data || [];
+  var nxt = data.paging && data.paging.next;
+  while (nxt) { try { var nr=await fetch(nxt); var nd=await nr.json(); if(nd.data) rows=rows.concat(nd.data); nxt=nd.paging&&nd.paging.next; } catch(e){ break; } }
+
+  rows.forEach(function(r) {
+    var d = r.date_start;
+    if (!d) return;
+    var getAV = function(arr, type) {
+      if (!Array.isArray(arr)) return 0;
+      var a = arr.find(function(x){ return x.action_type===type||String(x.action_type).indexOf(type)>-1; });
+      return a ? parseFloat(a.value) : 0;
+    };
+    if (!DPT_DATA.meta[d]) DPT_DATA.meta[d] = {};
+    DPT_DATA.meta[d].spent   = (parseFloat(r.spend)||0).toFixed(2);
+    DPT_DATA.meta[d].rev     = getAV(r.action_values,'purchase').toFixed(2);
+    DPT_DATA.meta[d].orders  = Math.round(getAV(r.actions,'purchase'));
+    DPT_DATA.meta[d].clicks  = parseInt(r.clicks)||0;
+    DPT_DATA.meta[d].source  = 'api';
+  });
+}
+
+async function syncGoogleDPT(propId, month, year) {
+  var since = year + '-' + String(month).padStart(2,'0') + '-01';
+  var lastDay = new Date(year, month, 0).getDate();
+  var until = year + '-' + String(month).padStart(2,'0') + '-' + String(lastDay).padStart(2,'0');
+
+  var res = await fetch('/api/ga', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ propertyId: propId, startDate: since, endDate: until })
+  });
+  var text = await res.text();
+  if (!text) throw new Error('GA API empty response');
+  var data = JSON.parse(text);
+  if (data.error) throw new Error(data.error);
+
+  (data.daily || []).forEach(function(row) {
+    var d = row.date;
+    if (!d || d.length !== 8) return;
+    var fmtDate = d.slice(0,4) + '-' + parseInt(d.slice(4,6)) + '-' + parseInt(d.slice(6,8));
+    if (!DPT_DATA.google[fmtDate]) DPT_DATA.google[fmtDate] = {};
+    DPT_DATA.google[fmtDate].rev    = (row.conversions * 10).toFixed(2); // approximate
+    DPT_DATA.google[fmtDate].spent  = '0';
+    DPT_DATA.google[fmtDate].orders = Math.round(row.conversions);
+    DPT_DATA.google[fmtDate].clicks = row.sessions || 0;
+    DPT_DATA.google[fmtDate].source = 'api';
+  });
+}
+
+function calcDPT2() {
+  var month = +document.getElementById('dpt-month2').value;
+  var year  = +document.getElementById('dpt-year2').value;
+  var days  = new Date(year, month, 0).getDate();
+  var tRev  = +document.getElementById('dpt-t-rev').value    || 0;
+  var tSp   = +document.getElementById('dpt-t-spent').value  || 0;
+  var tOrd  = +document.getElementById('dpt-t-orders').value || 0;
+  var tRoas = +document.getElementById('dpt-t-roas').value   || 4;
+  var today = new Date();
+  var daysPassed = (today.getMonth()+1===month && today.getFullYear()===year) ? today.getDate() : days;
+
+  // Sum all platforms
+  var tot = { rev:0, spent:0, orders:0, clicks:0 };
+  ['meta','google','snap','tiktok'].forEach(function(p) {
+    for (var d=1; d<=daysPassed; d++) {
+      var key = year+'-'+month+'-'+d;
+      var dd = DPT_DATA[p][key] || {};
+      tot.rev    += parseFloat(dd.rev)    || 0;
+      tot.spent  += parseFloat(dd.spent)  || 0;
+      tot.orders += parseFloat(dd.orders) || 0;
+      tot.clicks += parseFloat(dd.clicks) || 0;
+    }
+  });
+
+  var tRoasAct = tot.spent > 0 ? (tot.rev/tot.spent).toFixed(2)  : 0;
+  var tAov     = tot.orders> 0 ? (tot.rev/tot.orders).toFixed(2) : 0;
+  var tCps     = tot.orders> 0 ? (tot.spent/tot.orders).toFixed(2): 0;
+  var tCvr     = tot.clicks> 0 ? (tot.orders/tot.clicks*100).toFixed(2): 0;
+  var tCpc     = tot.clicks> 0 ? (tot.spent/tot.clicks).toFixed(2): 0;
+  var roasC    = parseFloat(tRoasAct)>=tRoas?'var(--green)':parseFloat(tRoasAct)>=tRoas*0.7?'var(--amber)':'var(--red)';
+  var daysLeft = days - daysPassed;
+
+  // Total row
+  var totalRow = document.getElementById('dpt-total-row');
+  if (totalRow) totalRow.innerHTML = [
+    {l:'ROAS',    v:tRoasAct+'x', c:roasC},
+    {l:'Revenue', v:'$'+tot.rev.toFixed(0), c:'var(--green)'},
+    {l:'Spent',   v:'$'+tot.spent.toFixed(0), c:'var(--text)'},
+    {l:'Orders',  v:tot.orders, c:'var(--text)'},
+    {l:'Clicks',  v:tot.clicks.toLocaleString(), c:'var(--accent2)'}
+  ].map(function(k){
+    return '<div style="background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(6,182,212,.05));border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:12px;text-align:center">' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px">'+k.l+'</div>' +
+      '<div style="font-size:20px;font-weight:700;font-family:var(--mono);color:'+k.c+'">'+k.v+'</div></div>';
+  }).join('');
+
+  var extra = document.getElementById('dpt-total-extra');
+  if (extra) extra.innerHTML = [
+    {l:'AOV', v:'$'+tAov},{l:'CPS', v:'$'+tCps},
+    {l:'CVR', v:tCvr+'%', c:parseFloat(tCvr)>1?'var(--green)':parseFloat(tCvr)>0.5?'var(--amber)':'var(--red)'},
+    {l:'CPC', v:'$'+tCpc},{l:'يوم '+daysPassed+'/'+days, v:daysLeft+' متبقي', c:'var(--muted)'}
+  ].map(function(k){
+    return '<div class="res-box"><div class="res-lbl">'+k.l+'</div><div class="res-val" style="font-size:14px;color:'+(k.c||'var(--text)')+'">'+k.v+'</div></div>';
+  }).join('');
+
+  // ── SMART PROGRESS STRIP ──
+  var revPct   = tRev  > 0 ? Math.min(tot.rev/tRev*100,   100).toFixed(1) : 0;
+  var spPct    = tSp   > 0 ? Math.min(tot.spent/tSp*100,  100).toFixed(1) : 0;
+  var ordPct   = tOrd  > 0 ? Math.min(tot.orders/tOrd*100,100).toFixed(1) : 0;
+  var timePct  = (daysPassed/days*100).toFixed(1);
+
+  var revRR    = tRev  > 0 ? (tRev/days).toFixed(0)  : 0;
+  var spRR     = tSp   > 0 ? (tSp/days).toFixed(0)   : 0;
+  var revActRR = daysPassed > 0 ? (tot.rev/daysPassed).toFixed(0) : 0;
+  var revNeed  = daysLeft > 0 && tRev > 0 ? Math.max(0,(tRev-tot.rev)/daysLeft).toFixed(0) : 0;
+
+  var revStatus = parseFloat(revPct) >= parseFloat(timePct) ? '🟢 On Track' : parseFloat(revPct) >= parseFloat(timePct)*0.8 ? '🟡 Behind' : '🔴 Off Track';
+
+  var tracking = document.getElementById('dpt-tracking');
+  if (tracking) tracking.innerHTML = [
+    {
+      title:'Achieved MTD', sub:'يوم '+daysPassed+' من '+days,
+      items:[
+        {n:'Revenue',  v:'$'+tot.rev.toFixed(0), pct:revPct,  c:parseFloat(revPct)>=100?'var(--green)':parseFloat(revPct)>=70?'var(--amber)':'var(--red)'},
+        {n:'Spent',    v:'$'+tot.spent.toFixed(0), pct:spPct, c:'var(--accent2)'},
+        {n:'Orders',   v:tot.orders, pct:ordPct, c:parseFloat(ordPct)>=100?'var(--green)':parseFloat(ordPct)>=70?'var(--amber)':'var(--red)'}
+      ]
+    },
+    {
+      title:'Monthly Target', sub:revStatus,
+      items:[
+        {n:'Revenue',  v:'$'+(tRev||0).toLocaleString(),  pct:100, c:'var(--text)'},
+        {n:'Spent',    v:'$'+(tSp||0).toLocaleString(),   pct:100, c:'var(--text)'},
+        {n:'Orders',   v:(tOrd||0).toLocaleString(),       pct:100, c:'var(--text)'}
+      ]
+    },
+    {
+      title:'Daily Run Rate', sub:daysLeft+' يوم متبقي',
+      items:[
+        {n:'Rev/يوم مطلوب',   v:'$'+revNeed,   pct:null, c:parseFloat(revNeed)>parseFloat(revRR)?'var(--red)':'var(--green)'},
+        {n:'Rev/يوم فعلي',    v:'$'+revActRR,  pct:null, c:parseFloat(revActRR)>=parseFloat(revRR)?'var(--green)':'var(--amber)'},
+        {n:'Rev/يوم مخطط',    v:'$'+revRR,     pct:null, c:'var(--muted)'}
+      ]
+    }
+  ].map(function(card){
+    var items = card.items.map(function(item){
+      var prog = item.pct !== null ?
+        '<div class="progress-track"><div class="progress-fill" style="width:'+item.pct+'%;background:'+item.c+'"></div></div>' : '';
+      return '<div style="margin-bottom:10px">' +
+        '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px">' +
+        '<span style="color:var(--muted)">'+item.n+'</span>' +
+        '<span style="font-weight:700;font-family:var(--mono);color:'+item.c+'">'+item.v+'</span>' +
+        '</div>' + prog + '</div>';
+    }).join('');
+    return '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px">' +
+      '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">'+card.title+'</div>' +
+      '<div style="font-size:10px;color:var(--muted);margin-bottom:12px">'+card.sub+'</div>' +
+      items + '</div>';
+  }).join('');
+
+  // ── PACE INDICATOR ──
+  var paceGrid = document.getElementById('dpt-pace-grid');
+  if (paceGrid) {
+    var paceColor = parseFloat(revActRR) >= parseFloat(revRR) ? 'var(--green)' : parseFloat(revActRR) >= parseFloat(revRR)*0.8 ? 'var(--amber)' : 'var(--red)';
+    var projRev = parseFloat(revActRR) * days;
+    var projPct = tRev > 0 ? (projRev/tRev*100).toFixed(1) : 0;
+    paceGrid.innerHTML = [
+      {l:'الإيراد اليومي الفعلي', v:'$'+revActRR, c:paceColor, sub:'المتوسط حتى الآن'},
+      {l:'الإيراد اليومي المخطط', v:'$'+revRR, c:'var(--muted)', sub:'لتحقيق الهدف'},
+      {l:'الإيراد المتوقع بالشهر', v:'$'+projRev.toFixed(0), c:parseFloat(projPct)>=100?'var(--green)':'var(--amber)', sub:projPct+'% من الهدف'},
+      {l:'ROAS الحالي', v:tRoasAct+'x', c:roasC, sub:'الهدف: '+tRoas+'x'}
+    ].map(function(k){
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center">' +
+        '<div style="font-size:9px;color:var(--muted);margin-bottom:5px">'+k.l+'</div>' +
+        '<div style="font-size:20px;font-weight:700;font-family:var(--mono);color:'+k.c+'">'+k.v+'</div>' +
+        '<div style="font-size:9px;color:var(--muted2);margin-top:3px">'+k.sub+'</div></div>';
+    }).join('');
+  }
+
+  // ── HEATMAP ──
+  buildDPTHeatmap(month, year, days, daysPassed, tot.rev);
+}
+
+function buildDPTHeatmap(month, year, days, todayDay, totalRev) {
+  var heatmap = document.getElementById('dpt-heatmap');
+  if (!heatmap) return;
+  heatmap.innerHTML = '';
+
+  var maxDaily = 0;
+  for (var d=1; d<=days; d++) {
+    var key = year+'-'+month+'-'+d;
+    var dayRev = 0;
+    ['meta','google','snap','tiktok'].forEach(function(p){
+      dayRev += parseFloat((DPT_DATA[p][key]||{}).rev)||0;
+    });
+    if (dayRev > maxDaily) maxDaily = dayRev;
+  }
+
+  for (var d=1; d<=days; d++) {
+    var key = year+'-'+month+'-'+d;
+    var dayRev = 0;
+    ['meta','google','snap','tiktok'].forEach(function(p){
+      dayRev += parseFloat((DPT_DATA[p][key]||{}).rev)||0;
+    });
+
+    var intensity = maxDaily > 0 ? dayRev/maxDaily : 0;
+    var bg = intensity === 0 ? 'rgba(99,102,241,.06)' :
+             intensity < 0.25 ? 'rgba(99,102,241,.2)' :
+             intensity < 0.5  ? 'rgba(99,102,241,.4)' :
+             intensity < 0.75 ? 'rgba(99,102,241,.65)' : '#6366F1';
+
+    var isFuture = todayDay > 0 && d > todayDay;
+    var isToday  = d === todayDay;
+
+    var cell = document.createElement('div');
+    cell.title = 'يوم ' + d + ': $' + dayRev.toFixed(0);
+    cell.style.cssText =
+      'width:28px;height:28px;border-radius:5px;background:'+bg+';' +
+      'display:flex;align-items:center;justify-content:center;' +
+      'font-size:9px;color:rgba(255,255,255,'+(intensity>0.5?'0.9':'0.4')+');' +
+      'font-family:var(--mono);cursor:default;transition:transform .15s;' +
+      (isFuture ? 'opacity:0.3;' : '') +
+      (isToday  ? 'box-shadow:0 0 0 2px var(--accent);' : '');
+    cell.textContent = d;
+    cell.addEventListener('mouseenter', function(e){ e.target.style.transform='scale(1.2)'; });
+    cell.addEventListener('mouseleave', function(e){ e.target.style.transform='scale(1)'; });
+    heatmap.appendChild(cell);
+  }
+}
+
+async function analyzeDPTSmart() {
+  var month = +document.getElementById('dpt-month2').value;
+  var year  = +document.getElementById('dpt-year2').value;
+  var days  = new Date(year, month, 0).getDate();
+  var tRev  = +document.getElementById('dpt-t-rev').value  || 0;
+  var tRoas = +document.getElementById('dpt-t-roas').value || 4;
+  var today = new Date();
+  var daysPassed = (today.getMonth()+1===month && today.getFullYear()===year) ? today.getDate() : days;
+  var daysLeft = days - daysPassed;
+
+  var tot = { rev:0, spent:0, orders:0, clicks:0 };
+  var dailySummary = [];
+
+  for (var d=1; d<=daysPassed; d++) {
+    var key = year+'-'+month+'-'+d;
+    var dayRev=0, daySpent=0, dayOrders=0;
+    ['meta','google','snap','tiktok'].forEach(function(p){
+      dayRev    += parseFloat((DPT_DATA[p][key]||{}).rev)    || 0;
+      daySpent  += parseFloat((DPT_DATA[p][key]||{}).spent)  || 0;
+      dayOrders += parseFloat((DPT_DATA[p][key]||{}).orders) || 0;
+    });
+    tot.rev    += dayRev;
+    tot.spent  += daySpent;
+    tot.orders += dayOrders;
+    if (dayRev > 0 || daySpent > 0) {
+      dailySummary.push('D'+d+':$'+dayRev.toFixed(0)+'rev/$'+daySpent.toFixed(0)+'spent/'+dayOrders+'orders');
+    }
+  }
+
+  var roas = tot.spent > 0 ? (tot.rev/tot.spent).toFixed(2) : 0;
+  var revPct = tRev > 0 ? (tot.rev/tRev*100).toFixed(1) : 0;
+  var revNeed = daysLeft > 0 && tRev > 0 ? Math.max(0, (tRev-tot.rev)/daysLeft).toFixed(0) : 0;
+
+  var box = document.getElementById('dpt-ai-box');
+  var content = document.getElementById('dpt-ai-content');
+  if (box) box.style.display = 'block';
+  if (content) content.textContent = '⏳ جاري التحليل...';
+
+  var prompt =
+    'DPT Analysis Month ' + month + '/' + year + ' Day ' + daysPassed + '/' + days + '\n' +
+    'Target: Rev=$' + tRev + ' ROAS=' + tRoas + 'x\n' +
+    'MTD: Rev=$' + tot.rev.toFixed(0) + ' Spent=$' + tot.spent.toFixed(0) + ' Orders=' + tot.orders + ' ROAS=' + roas + 'x\n' +
+    'Progress: ' + revPct + '% of Rev target | ' + daysLeft + ' days left\n' +
+    'Need daily: $' + revNeed + '/day\n' +
+    'Daily data: ' + dailySummary.slice(-10).join(' | ') + '\n\n' +
+    'Analyze in Arabic: 1) On track or off track with details 2) Revenue pace analysis 3) ROAS trend 4) Specific actions to hit target 5) Risk assessment';
+
+  await callAI(prompt, content, null);
+}
+
+// ══ MEDIA PLAN ══// ══ MEDIA PLAN ══
+var MP_CAMPAIGNS = [
+  {platform:'Social',icon:'📘',name:'Meta',pct:20,ctr:1.2,cpc:0.6,cr:1.1,color:'#1877F2'},
+  {platform:'Social',icon:'🎵',name:'TikTok',pct:15,ctr:0.4,cpc:0.3,cr:0.4,color:'#FF0050'},
+  {platform:'Social',icon:'👻',name:'Snapchat',pct:10,ctr:0.5,cpc:0.4,cr:0.5,color:'#FFFC00'},
+  {platform:'Google',icon:'🔍',name:'Search Brand',pct:5,ctr:45,cpc:0.35,cr:1.8,color:'#EA4335'},
+  {platform:'Google',icon:'🔍',name:'Search Market',pct:20,ctr:8,cpc:0.8,cr:0.9,color:'#FBBC05'},
+  {platform:'Google',icon:'🔍',name:'Performance Max',pct:20,ctr:1.2,cpc:0.6,cr:1.2,color:'#34A853'},
+  {platform:'Google',icon:'🔍',name:'Shopping',pct:10,ctr:0.8,cpc:0.35,cr:0.4,color:'#4285F4'},
+];
+var mpCharts = {};
+
+function calcMP() {
+  var aov = +document.getElementById('mp-aov').value||250;
+  var total = +document.getElementById('mp-total').value||50000;
+  var tbody = document.getElementById('mp-tbody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  var totals={inv:0,imp:0,clicks:0,orders:0,rev:0};
+  var currentPlatform='';
+  MP_CAMPAIGNS.forEach(function(camp,i){
+    var inv=total*camp.pct/100;
+    var clicks=inv/camp.cpc;
+    var imp=clicks/(camp.ctr/100);
+    var cpm=(inv/imp)*1000;
+    var orders=clicks*(camp.cr/100);
+    var rev=orders*aov;
+    var cps=orders>0?inv/orders:0;
+    var roas=inv>0?rev/inv:0;
+    totals.inv+=inv;totals.imp+=imp;totals.clicks+=clicks;totals.orders+=orders;totals.rev+=rev;
+    if(camp.platform!==currentPlatform){
+      currentPlatform=camp.platform;
+      var ph=document.createElement('tr');ph.className='platform-row';
+      ph.innerHTML='<td colspan="14" style="padding:8px 10px;font-weight:600;color:var(--text)">'+camp.icon+' '+camp.platform+'</td>';
+      tbody.appendChild(ph);
+    }
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td></td><td style="font-weight:500;color:var(--text)">'+camp.name+'</td>'+
+      '<td><input class="mp-input" type="number" value="'+inv.toFixed(0)+'" onchange="MPchangeInv('+i+',this.value)" style="width:75px"></td>'+
+      '<td><input class="mp-input mp-pct" type="number" value="'+camp.pct+'" onchange="MPchangePct('+i+',this.value)" style="width:55px"></td>'+
+      '<td class="mp-val">'+fmtN(imp)+'</td><td class="mp-val">'+fmtN(clicks)+'</td>'+
+      '<td><input class="mp-input" type="number" step="0.1" value="'+camp.ctr+'" onchange="MPchangeField('+i+',\'ctr\',this.value)" style="width:60px"></td>'+
+      '<td><input class="mp-input" type="number" step="0.01" value="'+camp.cpc+'" onchange="MPchangeField('+i+',\'cpc\',this.value)" style="width:60px"></td>'+
+      '<td class="mp-val">$'+cpm.toFixed(2)+'</td>'+
+      '<td><input class="mp-input" type="number" step="0.1" value="'+camp.cr+'" onchange="MPchangeField('+i+',\'cr\',this.value)" style="width:60px"></td>'+
+      '<td class="mp-val">'+Math.round(orders).toLocaleString()+'</td>'+
+      '<td class="mp-val" style="color:var(--green)">$'+fmtN(rev)+'</td>'+
+      '<td class="mp-val" style="color:'+(cps<aov?'var(--green)':'var(--amber)')+'">$'+cps.toFixed(0)+'</td>'+
+      '<td class="mp-val" style="font-weight:700;color:'+(roas>=3?'var(--green)':roas>=2?'var(--amber)':'var(--red)')+'">'+roas.toFixed(2)+'x</td>';
+    tbody.appendChild(tr);
+  });
+  var totalRoas=totals.inv>0?totals.rev/totals.inv:0;
+  var totalCps=totals.orders>0?totals.inv/totals.orders:0;
+  var totalCpm=totals.imp>0?totals.inv/totals.imp*1000:0;
+  var tr=document.createElement('tr');tr.className='total-row';
+  tr.innerHTML='<td colspan="2" style="color:var(--accent)">الإجمالي</td>'+
+    '<td class="mp-val">$'+fmtN(totals.inv)+'</td><td class="mp-val">100%</td>'+
+    '<td class="mp-val">'+fmtN(totals.imp)+'</td><td class="mp-val">'+fmtN(totals.clicks)+'</td>'+
+    '<td class="mp-val">'+(totals.clicks>0?(totals.clicks/totals.imp*100).toFixed(2):0)+'%</td>'+
+    '<td class="mp-val">$'+(totals.clicks>0?totals.inv/totals.clicks:0).toFixed(2)+'</td>'+
+    '<td class="mp-val">$'+totalCpm.toFixed(2)+'</td>'+
+    '<td class="mp-val">'+(totals.clicks>0?(totals.orders/totals.clicks*100).toFixed(2):0)+'%</td>'+
+    '<td class="mp-val">'+Math.round(totals.orders).toLocaleString()+'</td>'+
+    '<td class="mp-val" style="color:var(--green)">$'+fmtN(totals.rev)+'</td>'+
+    '<td class="mp-val">$'+totalCps.toFixed(0)+'</td>'+
+    '<td class="mp-val" style="color:'+(totalRoas>=3?'var(--green)':totalRoas>=2?'var(--amber)':'var(--red)')+'">'+totalRoas.toFixed(2)+'x</td>';
+  tbody.appendChild(tr);
+  var sumEl=document.getElementById('mp-summary');if(sumEl)sumEl.style.display='block';
+  var kpisEl=document.getElementById('mp-kpis');
+  if(kpisEl)kpisEl.innerHTML=[{l:'إجمالي الاستثمار',v:'$'+fmtN(totals.inv),c:'#58A6FF'},{l:'الطلبات المتوقعة',v:Math.round(totals.orders).toLocaleString(),c:'#3FB950'},{l:'الإيراد المتوقع',v:'$'+fmtN(totals.rev),c:'#3FB950'},{l:'ROAS المتوقع',v:totalRoas.toFixed(2)+'x',c:totalRoas>=3?'var(--green)':totalRoas>=2?'var(--amber)':'var(--red)'}].map(function(k){return '<div class="kpi"><div class="kpi-l">'+k.l+'</div><div class="kpi-v" style="font-size:18px;color:'+k.c+'">'+k.v+'</div></div>';}).join('');
+  updateMPCharts();
+}
+
+function fmtN(n){if(n>=1000000)return (n/1000000).toFixed(2)+'M';if(n>=1000)return (n/1000).toFixed(1)+'K';return Math.round(n).toLocaleString();}
+function MPchangePct(i,val){MP_CAMPAIGNS[i].pct=parseFloat(val)||0;calcMP();}
+function MPchangeInv(i,val){var total=+document.getElementById('mp-total').value||50000;MP_CAMPAIGNS[i].pct=(+val/total)*100;calcMP();}
+function MPchangeField(i,field,val){MP_CAMPAIGNS[i][field]=parseFloat(val)||0;calcMP();}
+function updateMPCharts(){
+  var total=+document.getElementById('mp-total').value||50000;
+  var aov=+document.getElementById('mp-aov').value||250;
+  var labels=MP_CAMPAIGNS.map(function(c){return c.name;});
+  var invData=MP_CAMPAIGNS.map(function(c){return total*c.pct/100;});
+  var roasData=MP_CAMPAIGNS.map(function(c){var inv=total*c.pct/100;var clicks=inv/c.cpc;var orders=clicks*(c.cr/100);var rev=orders*aov;return inv>0?(rev/inv).toFixed(2):0;});
+  if(mpCharts.c1)mpCharts.c1.destroy();
+  var c1=document.getElementById('mp-c1');
+  if(c1)mpCharts.c1=new Chart(c1,{type:'doughnut',data:{labels:labels,datasets:[{data:invData,backgroundColor:MP_CAMPAIGNS.map(function(c){return c.color;}),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:'#7D8590',font:{size:9},boxWidth:9}}}}});
+  if(mpCharts.c2)mpCharts.c2.destroy();
+  var c2=document.getElementById('mp-c2');
+  if(c2)mpCharts.c2=new Chart(c2,{type:'bar',data:{labels:labels,datasets:[{label:'ROAS',data:roasData,backgroundColor:roasData.map(function(r){return r>=3?'rgba(63,185,80,.7)':r>=2?'rgba(210,153,34,.7)':'rgba(248,81,73,.7)';}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#484F58',font:{size:8}}},y:{ticks:{color:'#484F58',font:{size:8}},grid:{color:'rgba(255,255,255,.04)'}}}}});
+}
+function resetMP(){document.getElementById('mp-aov').value=250;document.getElementById('mp-total').value=50000;MP_CAMPAIGNS=[{platform:'Social',icon:'📘',name:'Meta',pct:20,ctr:1.2,cpc:0.6,cr:1.1,color:'#1877F2'},{platform:'Social',icon:'🎵',name:'TikTok',pct:15,ctr:0.4,cpc:0.3,cr:0.4,color:'#FF0050'},{platform:'Social',icon:'👻',name:'Snapchat',pct:10,ctr:0.5,cpc:0.4,cr:0.5,color:'#FFFC00'},{platform:'Google',icon:'🔍',name:'Search Brand',pct:5,ctr:45,cpc:0.35,cr:1.8,color:'#EA4335'},{platform:'Google',icon:'🔍',name:'Search Market',pct:20,ctr:8,cpc:0.8,cr:0.9,color:'#FBBC05'},{platform:'Google',icon:'🔍',name:'Performance Max',pct:20,ctr:1.2,cpc:0.6,cr:1.2,color:'#34A853'},{platform:'Google',icon:'🔍',name:'Shopping',pct:10,ctr:0.8,cpc:0.35,cr:0.4,color:'#4285F4'}];calcMP();}
+async function analyzeMP(){var total=+document.getElementById('mp-total').value||50000;var aov=+document.getElementById('mp-aov').value||250;var client=document.getElementById('mp-client').value||'Client';var summary=MP_CAMPAIGNS.map(function(c){var inv=total*c.pct/100;var clicks=inv/c.cpc;var orders=clicks*(c.cr/100);var rev=orders*aov;var roas=inv>0?(rev/inv).toFixed(2):0;return c.name+'($'+inv.toFixed(0)+','+c.pct+'%,ROAS:'+roas+'x)';}).join(' | ');await callAI('Analyze Media Plan for '+client+'. Budget:$'+total+' AOV:$'+aov+' Campaigns:'+summary+'\n1) Budget distribution optimal? 2) Best ROAS campaigns? 3) Adjustments? 4) Risk assessment',document.getElementById('mp-ai'),document.getElementById('mp-ai-res'));}
+
+// ══ ROAS CALCULATOR ══
+function switchCalc(view, el) {
+  document.querySelectorAll('.calc-tab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.calc-view').forEach(function(v){v.classList.remove('active');});
+  el.classList.add('active');
+  var v = document.getElementById('calc-'+view);
+  if(v) v.classList.add('active');
+}
+
+function fmtK(n) {
+  if(!n || isNaN(n)) return '—';
+  if(n >= 1000000) return (n/1000000).toFixed(2)+'M';
+  if(n >= 1000) return (n/1000).toFixed(1)+'K';
+  return Math.round(n).toLocaleString();
+}
+function fmtD(n) { return n > 0 ? '$'+n.toFixed(2) : '—'; }
+function fmtP(n) { return n > 0 ? n.toFixed(2)+'%' : '—'; }
+function fmtX(n) { return n > 0 ? n.toFixed(2)+'x' : '—'; }
+
+function setEl(id, val) { var el=document.getElementById(id); if(el) el.textContent=val; }
+function setCol(id, val, c) { var el=document.getElementById(id); if(el){el.textContent=val; if(c) el.style.color=c;} }
+
+// ── FORWARD CALCULATOR ──
+function calcForward() {
+  var asp    = +document.getElementById('c-asp').value    || 0;
+  var qty    = +document.getElementById('c-qty').value    || 1;
+  var repeat = +document.getElementById('c-repeat').value || 0;
+  var tRoas  = +document.getElementById('c-target-roas').value || 4;
+  var cpm    = +document.getElementById('c-cpm').value    || 0;
+  var ctr    = +document.getElementById('c-ctr').value    || 0;
+  var cvr    = +document.getElementById('c-cvr').value    || 0;
+  var budget = +document.getElementById('c-budget').value || 0;
+
+  var aov    = asp * qty;
+  var cpc    = (cpm > 0 && ctr > 0) ? (cpm/1000) / (ctr/100) : 0;
+  var cpa    = (cpc > 0 && cvr > 0) ? cpc / (cvr/100) : 0;
+  var roas   = (aov > 0 && cpa > 0) ? aov / cpa : 0;
+  var ltv    = aov * (1 + repeat/100);
+  var maxCpa = aov / tRoas;
+
+  var rc = roas >= tRoas ? 'var(--green)' : roas >= tRoas*0.7 ? 'var(--amber)' : 'var(--red)';
+  setCol('r-roas', roas > 0 ? roas.toFixed(2)+'x' : '—', rc);
+  var flag = document.getElementById('r-roas-flag');
+  if(flag) flag.innerHTML = roas > 0 ? '<span class="flag '+(roas>=tRoas?'flag-g':'flag-r')+'">'+(roas>=tRoas?'✅ فوق الهدف':'⚠ تحت الهدف '+tRoas+'x')+'</span>' : '';
+
+  setEl('r-aov',    aov    > 0 ? '$'+aov.toFixed(2)    : '—');
+  setEl('r-cpc',    cpc    > 0 ? '$'+cpc.toFixed(3)    : '—');
+  setEl('r-cpa',    cpa    > 0 ? '$'+cpa.toFixed(2)    : '—');
+  setEl('r-maxcpa', maxCpa > 0 ? '$'+maxCpa.toFixed(2) : '—');
+  setEl('r-ltv',    ltv    > 0 ? '$'+ltv.toFixed(2)    : '—');
+  setEl('r-margin', aov > 0 && cpa > 0 ? ((aov-cpa)/aov*100).toFixed(1)+'%' : '—');
+
+  // Daily projections
+  if(budget > 0 && cpc > 0) {
+    var dClicks = budget / cpc;
+    var dOrders = dClicks * (cvr/100);
+    var dRev    = dOrders * aov;
+    var dRoas   = dRev / budget;
+    var proj    = document.getElementById('r-projection');
+    if(proj) proj.innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+      '<div class="res-box"><div class="res-lbl">Clicks/يوم</div><div class="res-val">'+fmtK(dClicks)+'</div></div>'+
+      '<div class="res-box"><div class="res-lbl">Orders/يوم</div><div class="res-val">'+Math.round(dOrders)+'</div></div>'+
+      '<div class="res-box"><div class="res-lbl">Revenue/يوم</div><div class="res-val" style="color:var(--green)">$'+dRev.toFixed(0)+'</div></div>'+
+      '<div class="res-box"><div class="res-lbl">ROAS/يوم</div><div class="res-val" style="color:'+(dRoas>=tRoas?'var(--green)':'var(--red)')+'">'+dRoas.toFixed(2)+'x</div></div>'+
+      '</div>'+
+      '<div style="margin-top:8px;padding:8px;background:rgba(255,255,255,.03);border-radius:6px;font-size:11px;color:var(--muted)">'+
+      'Budget $'+budget+'/يوم → '+fmtK(dClicks)+' click → '+Math.round(dOrders)+' order → $'+dRev.toFixed(0)+' rev → ROAS '+dRoas.toFixed(2)+'x'+
+      '</div>';
+  }
+}
+
+// ── REVERSE CALCULATOR ──
+function calcReverse() {
+  var target  = +document.getElementById('rv-target').value || 0;
+  var tRoas   = +document.getElementById('rv-roas').value   || 4;
+  var aov     = +document.getElementById('rv-aov').value    || 0;
+  var cvr     = +document.getElementById('rv-cvr').value    || 0;
+  var cpm     = +document.getElementById('rv-cpm').value    || 0;
+  var ctr     = +document.getElementById('rv-ctr').value    || 0;
+  var days    = +document.getElementById('rv-days').value   || 30;
+
+  if(!target || !tRoas || !aov) return;
+
+  var budget   = target / tRoas;
+  var orders   = target / aov;
+  var clicks   = cvr > 0 ? orders / (cvr/100) : 0;
+  var traffic  = ctr > 0 ? clicks / (ctr/100) : 0; // LP views needed
+  var imp      = cpm > 0 && ctr > 0 ? (clicks / (ctr/100)) : 0;
+  var cpc      = clicks > 0 ? budget / clicks : 0;
+  var cpa      = orders > 0 ? budget / orders : 0;
+
+  var rc = 'var(--accent)';
+  setCol('rv-budget',  '$'+budget.toFixed(0),          rc);
+  setCol('rv-orders',  Math.round(orders).toLocaleString(), 'var(--text)');
+  setEl('rv-clicks',   fmtK(clicks));
+  setEl('rv-traffic',  fmtK(traffic));
+  setEl('rv-cpc',      cpc > 0 ? '$'+cpc.toFixed(3) : '—');
+  setEl('rv-cpa',      cpa > 0 ? '$'+cpa.toFixed(2) : '—');
+  setEl('rv-imp',      fmtK(imp));
+
+  // Daily breakdown
+  var daily = document.getElementById('rv-daily');
+  if(daily) daily.innerHTML =
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+
+    '<div class="res-box"><div class="res-lbl">Budget/يوم</div><div class="res-val" style="color:var(--accent)">$'+(budget/days).toFixed(0)+'</div></div>'+
+    '<div class="res-box"><div class="res-lbl">Orders/يوم</div><div class="res-val">'+(orders/days).toFixed(1)+'</div></div>'+
+    '<div class="res-box"><div class="res-lbl">Revenue/يوم</div><div class="res-val" style="color:var(--green)">$'+(target/days).toFixed(0)+'</div></div>'+
+    '<div class="res-box"><div class="res-lbl">Clicks/يوم</div><div class="res-val">'+fmtK(clicks/days)+'</div></div>'+
+    '<div class="res-box"><div class="res-lbl">LP Views/يوم</div><div class="res-val">'+fmtK(traffic/days)+'</div></div>'+
+    '<div class="res-box"><div class="res-lbl">Impressions/يوم</div><div class="res-val">'+fmtK(imp/days)+'</div></div>'+
+    '</div>'+
+    '<div style="margin-top:10px;padding:10px;background:rgba(88,166,255,.05);border:1px solid rgba(88,166,255,.15);border-radius:8px;font-size:11px;line-height:1.9;color:var(--text)">'+
+    'لتحقيق <strong>$'+target.toLocaleString()+'</strong> revenue بـ ROAS <strong>'+tRoas+'x</strong> خلال <strong>'+days+' يوم</strong>:<br>'+
+    '💰 ميزانية إجمالية: <strong>$'+budget.toFixed(0)+'</strong> | يومياً: <strong>$'+(budget/days).toFixed(0)+'</strong><br>'+
+    '📦 طلبات مطلوبة: <strong>'+Math.round(orders).toLocaleString()+'</strong> طلب ('+( orders/days).toFixed(1)+'/يوم)<br>'+
+    '🖱️ كليكات مطلوبة: <strong>'+fmtK(clicks)+'</strong> كليك | CPC أقصى: <strong>'+( cpc > 0 ? '$'+cpc.toFixed(3) : 'N/A')+'</strong><br>'+
+    '👁️ ترافيك مطلوب: <strong>'+fmtK(traffic)+'</strong> LP View | Impressions: <strong>'+fmtK(imp)+'</strong>'+
+    '</div>';
+}
+
+// ── DIRECT CALCULATOR ──
+function calcDirect2() {
+  var spend   = +document.getElementById('cd-spend').value   || 0;
+  var rev     = +document.getElementById('cd-rev').value     || 0;
+  var orders  = +document.getElementById('cd-orders').value  || 0;
+  var clicks  = +document.getElementById('cd-clicks').value  || 0;
+  var imp     = +document.getElementById('cd-imp').value     || 0;
+  var lp      = +document.getElementById('cd-lp').value      || 0;
+  var tRoas   = +document.getElementById('cd-target').value  || 4;
+
+  var roas = spend > 0 ? rev/spend : 0;
+  var aov  = orders > 0 ? rev/orders : 0;
+  var cpa  = orders > 0 ? spend/orders : 0;
+  var ctr  = imp > 0 ? clicks/imp*100 : 0;
+  var cpc  = clicks > 0 ? spend/clicks : 0;
+  var cvr  = lp > 0 ? orders/lp*100 : (clicks > 0 ? orders/clicks*100 : 0);
+  var cpm  = imp > 0 ? spend/imp*1000 : 0;
+
+  var rc = roas >= tRoas ? 'var(--green)' : roas >= tRoas*0.7 ? 'var(--amber)' : 'var(--red)';
+  setCol('cd-roas', roas > 0 ? roas.toFixed(2)+'x' : '—', rc);
+  var flag = document.getElementById('cd-flag');
+  if(flag) flag.innerHTML = roas > 0 ? '<span class="flag '+(roas>=tRoas?'flag-g':roas>=tRoas*0.7?'flag-a':'flag-r')+'">'+(roas>=tRoas?'✅ فوق الهدف '+tRoas+'x':roas>=tRoas*0.7?'⚠ قريب من الهدف':'❌ تحت الهدف '+tRoas+'x')+'</span>' : '';
+
+  setEl('cd-aov', aov > 0 ? '$'+aov.toFixed(2) : '—');
+  setEl('cd-cpa', cpa > 0 ? '$'+cpa.toFixed(2) : '—');
+  setEl('cd-ctr', ctr > 0 ? ctr.toFixed(2)+'%' : '—');
+  setEl('cd-cpc', cpc > 0 ? '$'+cpc.toFixed(3) : '—');
+  setEl('cd-cvr', cvr > 0 ? cvr.toFixed(2)+'%' : '—');
+  setEl('cd-cpm', cpm > 0 ? '$'+cpm.toFixed(2) : '—');
+
+  // Improvement suggestions
+  var impr = document.getElementById('cd-improve');
+  if(impr && roas > 0 && roas < tRoas) {
+    var needed_rev    = spend * tRoas;
+    var needed_orders = aov > 0 ? needed_rev/aov : 0;
+    var needed_cvr    = clicks > 0 && needed_orders > 0 ? (needed_orders/clicks*100).toFixed(2) : 0;
+    var max_spend     = aov > 0 ? rev/tRoas : 0;
+    impr.innerHTML =
+      '<div style="font-size:11px;line-height:2;color:var(--text)">'+
+      '<div>📈 لتحقيق ROAS <strong>'+tRoas+'x</strong> من نفس الإنفاق:</div>'+
+      '<div style="color:var(--amber)">• الإيراد المطلوب: <strong>$'+needed_rev.toFixed(0)+'</strong> (الحالي: $'+rev.toFixed(0)+')</div>'+
+      '<div style="color:var(--amber)">• الطلبات المطلوبة: <strong>'+Math.round(needed_orders)+'</strong> (الحالي: '+orders+')</div>'+
+      (needed_cvr ? '<div style="color:var(--amber)">• CVR المطلوب: <strong>'+needed_cvr+'%</strong> (الحالي: '+cvr.toFixed(2)+'%)</div>' : '')+
+      '<div style="margin-top:6px;color:var(--muted)">أو تقليل الإنفاق لـ <strong>$'+max_spend.toFixed(0)+'</strong> مع نفس الإيراد</div>'+
+      '</div>';
+  } else if(impr && roas >= tRoas) {
+    impr.innerHTML = '<span class="flag flag-g">✅ تحقق الهدف! ROAS '+roas.toFixed(2)+'x فوق '+tRoas+'x</span>';
+  }
+}
+
+// Legacy function for onload compatibility
+function calcAll() { calcForward(); }
+function calcDirect() { calcDirect2(); }
+
+// ══ DPT TRACKER ══
+var DPT_DATA = { meta:{}, google:{}, snap:{}, tiktok:{} };
+var DPT_CUR_PLAT = 'meta';
 var DPT_PLAT_NAMES = {meta:'Meta',google:'Google',snap:'Snapchat',tiktok:'TikTok'};
 
 function switchDPTPlat(p, el) {
@@ -3366,6 +5073,7 @@ window.onload=function(){
   document.getElementById('dpt-year2').value=now.getFullYear();
   initDPT();
 };
+
 </script>
 </body>
 </html>
