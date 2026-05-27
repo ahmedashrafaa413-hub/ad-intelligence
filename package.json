@@ -1,0 +1,7 @@
+{
+  "name": "ad-intelligence",
+  "version": "1.0.0",
+  "description": "Ad Intelligence Platform",
+  "private": true,
+  "engines": { "node": ">=18" }
+}
