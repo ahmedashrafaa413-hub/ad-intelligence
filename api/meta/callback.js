@@ -16,7 +16,9 @@ export default async function handler(req, res) {
 
   const clientId = process.env.META_APP_ID;
   const clientSecret = process.env.META_APP_SECRET;
-  const redirectUri = "https://ad-intelligence-an2i.vercel.app/api/meta/callback";
+
+  const redirectUri =
+    "https://ad-intelligence-an2i.vercel.app/api/meta/callback";
 
   try {
     const tokenResponse = await fetch(
