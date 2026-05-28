@@ -1,14 +1,1 @@
-{
-  "name": "ad-intelligence",
-  "version": "1.0.0",
-  "private": true,
-  "engines": {
-    "node": ">=18"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "pg": "^8.11.5"
-  }
-}
+"main": "api/index.js"
