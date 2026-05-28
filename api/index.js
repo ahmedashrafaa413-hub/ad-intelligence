@@ -40,10 +40,47 @@ app.get("/api/meta/test", async (req, res) => {
   });
 });
 
-app.get("/api/campaigns", async (req, res) => {
+app.get("/api/meta/campaigns", async (req, res) => {
   res.json({
     success: true,
-    data: [],
+    provider: "Meta Ads",
+    data: [
+      {
+        id: "cmp_001",
+        name: "Prospecting Campaign",
+        status: "ACTIVE",
+        objective: "CONVERSIONS",
+        spend: 250,
+      },
+    ],
+  });
+});
+
+app.get("/api/meta/accounts", async (req, res) => {
+  res.json({
+    success: true,
+    provider: "Meta Ads",
+    data: [
+      {
+        id: "act_123456",
+        name: "Demo Account",
+        currency: "USD",
+      },
+    ],
+  });
+});
+
+app.get("/api/meta/insights", async (req, res) => {
+  res.json({
+    success: true,
+    provider: "Meta Ads",
+    insights: {
+      spend: 1200,
+      impressions: 45000,
+      clicks: 2100,
+      ctr: 4.5,
+      roas: 3.8,
+    },
   });
 });
 
