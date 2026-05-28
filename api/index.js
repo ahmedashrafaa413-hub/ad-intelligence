@@ -11,14 +11,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use("/api", metaRoutes);
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
 });
-
-app.use("/api", metaRoutes);
 
 app.get("/api", async (req, res) => {
   try {
