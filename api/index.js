@@ -228,5 +228,90 @@ app.get("/api/meta/insights", async (req, res) => {
 | EXPORT APP FOR VERCEL
 |--------------------------------------------------------------------------
 */
+app.get("/api/meta/full-insights", async (req, res) => {
+  try {
+    const accessToken = process.env.META_ACCESS_TOKEN;
+    const accountId = process.env.META_ACCOUNT_ID;
 
+    if (!accessToken || !accountId) {
+      return res.status(500).json({
+        success: false,
+        error: "META_ACCESS_TOKEN or META_ACCOUNT_ID missing",
+      });
+    }
+
+    const response = await axios.get(
+      `https://graph.facebook.com/v19.0/act_${accountId}/insights`,
+      {
+        params: {
+          access_token: accessToken,
+          level: "campaign",
+          date_preset: "last_30d",
+          fields: [
+            "campaign_id",
+            "campaign_name",
+            "impressions",
+            "reach",
+            "clicks",
+            "spend",
+            "ctr",
+            "cpc",
+            "cpm",
+            "actions",
+            "action_values"
+          ].join(","),
+          limit: 100
+        },
+      }
+    );
+
+    const rows = (response.data.data || []).map((row) => {
+      const actions = row.actions || [];
+      const actionValues = row.action_values || [];
+
+      const purchases =
+        actions.find((a) => a.action_type === "purchase")?.value ||
+        actions.find((a) => a.action_type === "omni_purchase")?.value ||
+        0;
+
+      const revenue =
+        actionValues.find((a) => a.action_type === "purchase")?.value ||
+        actionValues.find((a) => a.action_type === "omni_purchase")?.value ||
+        0;
+
+      const spend = Number(row.spend || 0);
+      const revenueNumber = Number(revenue || 0);
+      const purchasesNumber = Number(purchases || 0);
+
+      return {
+        campaign_id: row.campaign_id,
+        campaign_name: row.campaign_name,
+        impressions: Number(row.impressions || 0),
+        reach: Number(row.reach || 0),
+        clicks: Number(row.clicks || 0),
+        spend,
+        ctr: Number(row.ctr || 0),
+        cpc: Number(row.cpc || 0),
+        cpm: Number(row.cpm || 0),
+        purchases: purchasesNumber,
+        revenue: revenueNumber,
+        roas: spend > 0 ? Number((revenueNumber / spend).toFixed(2)) : 0,
+        cpa: purchasesNumber > 0 ? Number((spend / purchasesNumber).toFixed(2)) : 0
+      };
+    });
+
+    return res.json({
+      success: true,
+      provider: "Meta Ads",
+      level: "campaign",
+      date_preset: "last_30d",
+      data: rows,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message,
+    });
+  }
+});
 module.exports = app;
