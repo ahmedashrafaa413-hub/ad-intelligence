@@ -1,15 +1,17 @@
+```json
 {
-"version": 2,
-"builds": [
-{
-"src": "backend/server.js",
-"use": "@vercel/node"
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api",
+      "dest": "backend/server.js"
+    }
+  ]
 }
-],
-"routes": [
-{
-"src": "/api",
-"dest": "backend/server.js"
-}
-]
-}
+```
