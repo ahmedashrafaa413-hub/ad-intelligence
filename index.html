@@ -473,7 +473,10 @@ tr.today-row td:first-child{border-right:2px solid var(--v)}
       </div>
     </div>
     <div class="plat-pills">
-      <button class="plat-pill sel" onclick="setPlatform(this,'Meta')"><span class="pdot" style="background:#1877F2"></span>Meta Live</button>
+      <button class="plat-pill sel" onclick="setPlatform(this,'Meta')"><span class="pdot" style="background:#1877F2"></span>Meta</button>
+      <button class="plat-pill" onclick="setPlatform(this,'Google')"><span class="pdot" style="background:#EA4335"></span>Google</button>
+      <button class="plat-pill" onclick="setPlatform(this,'Snapchat')"><span class="pdot" style="background:#FFFC00"></span>Snap</button>
+      <button class="plat-pill" onclick="setPlatform(this,'TikTok')"><span class="pdot" style="background:#FF0050"></span>TikTok</button>
     </div>
   </div>
 
@@ -525,6 +528,14 @@ tr.today-row td:first-child{border-right:2px solid var(--v)}
   <div class="content">
 
 <div id="sec-dashboard" class="sec active">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+  <div style="font-size:11px;color:var(--muted)">آخر 30 يوم</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span id="db-badge" style="display:none;align-items:center;gap:5px;font-size:10px;color:var(--g);background:rgba(0,229,160,.08);padding:3px 10px;border-radius:20px;border:1px solid rgba(0,229,160,.2)"></span>
+    <button onclick="syncMetaToDB()" class="btn btn-p" style="font-size:11px;padding:6px 14px">⚡ سحب وحفظ في DB</button>
+  </div>
+  <div id="sync-status" style="font-size:11px;min-height:16px"></div>
+</div>
 <div class="kpi-grid">
     <div class="kpi"><div class="kpi-l">الانفاق</div><div class="kpi-v" id="k-spend">$3,495</div></div>
     <div class="kpi"><div class="kpi-l">المشتريات</div><div class="kpi-v" id="k-pur">139</div></div>
@@ -1466,81 +1477,166 @@ tr.today-row td:first-child{border-right:2px solid var(--v)}
 </div>
 </div>
 
-
 <div id="sec-setup" class="sec">
 <style>
-.conn-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .2s}
-.conn-card.connected{border-color:rgba(0,229,160,.35);background:rgba(0,229,160,.04)}
+.conn-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .2s}
+.conn-card.connected{border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.03)}
+.conn-card.error{border-color:rgba(248,81,73,.4)}
 .conn-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .conn-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.conn-name{font-size:14px;font-weight:700;color:var(--text)}
+.conn-name{font-size:14px;font-weight:600;color:var(--text)}
 .conn-desc{font-size:11px;color:var(--muted);margin-top:2px}
-.oauth-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:var(--font);transition:all .2s}
-.oauth-btn:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.live-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:12px;color:var(--muted);line-height:1.8}
-.live-ok{color:var(--g);font-weight:700}
-.live-error{color:var(--red);font-weight:700}
+.conn-status{margin-right:auto;font-size:11px}
+.oauth-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:all .2s}
+.oauth-btn:hover{opacity:.88;transform:translateY(-1px)}
+.conn-info{background:var(--s3);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.7;margin-top:10px}
+.conn-info strong{color:var(--text)}
+.acc-select{margin-top:10px;display:none}
+.status-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.status-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid}
+.sp-conn{background:rgba(63,185,80,.1);color:var(--green);border-color:rgba(63,185,80,.3)}
+.sp-disc{background:rgba(255,255,255,.04);color:var(--muted);border-color:var(--border)}
 </style>
 
-<div class="card card-v" style="margin-bottom:14px">
+<!-- HEADER -->
+<div class="card" style="background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(124,92,255,.08));border-color:rgba(88,166,255,.2);margin-bottom:12px">
   <div style="display:flex;align-items:center;gap:14px">
     <div style="font-size:36px">🔗</div>
     <div>
-      <div style="font-size:16px;font-weight:700">ربط Meta Ads لايف</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px">
-        تم حذف أي ربط قديم للمنصات الاجتماعية، والاعتماد الآن على Meta OAuth + Full Insights API.
-      </div>
+      <div style="font-size:16px;font-weight:600">ربط المنصات الإعلانية</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">اربط حساباتك بضغطة زر واحدة — بدون نسخ tokens يدوياً</div>
     </div>
   </div>
 </div>
 
+<!-- STATUS BAR -->
+<div class="status-bar" id="setup-status-bar">
+  <div class="status-pill sp-disc" id="sp-meta">📘 Meta — غير مربوط</div>
+  <div class="status-pill sp-disc" id="sp-snap">👻 Snapchat — غير مربوط</div>
+  <div class="status-pill sp-disc" id="sp-tiktok">🎵 TikTok — غير مربوط</div>
+  <div class="status-pill sp-disc" id="sp-google">📈 GA4 — غير مربوط</div>
+</div>
+
+<!-- PLATFORMS GRID -->
 <div class="g2" style="gap:12px">
-  <div class="conn-card connected" id="card-meta">
-    <div class="conn-head">
-      <div class="conn-icon" style="background:rgba(24,119,242,.15)">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      </div>
-      <div>
-        <div class="conn-name">Meta Ads</div>
-        <div class="conn-desc">Facebook & Instagram Marketing API</div>
-      </div>
+
+<!-- META -->
+<div class="conn-card" id="card-meta">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(24,119,242,.15)"><svg viewBox="0 0 24 24" width="22" height="22" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+    <div>
+      <div class="conn-name">Meta Ads</div>
+      <div class="conn-desc">Facebook & Instagram Ads</div>
     </div>
-
-    <button class="oauth-btn" style="background:#1877F2;color:#fff" onclick="connectMeta()">
-      تسجيل الدخول وربط Meta
-    </button>
-
-    <div class="live-box" style="margin-top:12px">
-      <div id="meta-live-status">جاري فحص حالة الربط...</div>
-      <div style="margin-top:8px">
-        <strong>Endpoints:</strong><br>
-        /api/meta/campaigns<br>
-        /api/meta/full-insights
-      </div>
+    <div class="conn-status" id="st-meta">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
     </div>
   </div>
+  <button class="oauth-btn" style="background:#1877F2;color:#fff" onclick="connectMeta()" id="btn-meta">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.994 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> تسجيل الدخول بـ Facebook
+  </button>
+  <div id="meta-accounts" class="acc-select">
+    <label class="fl">اختر Ad Account</label>
+    <select id="meta-acc-select" onchange="selectMetaAccount(this.value)" style="margin-top:4px">
+      <option value="">اختر...</option>
+    </select>
+  </div>
+  <div style="margin-bottom:10px">
+    <label class="fl">Meta App ID (اختياري — لو مش شغال)</label>
+    <input type="text" id="meta-app-id-input" placeholder="ادخل App ID مباشرةً هنا...">
+  </div>
+  <div class="conn-info">
+    <strong>الصلاحيات المطلوبة:</strong> ads_read, ads_management<br>
+    <strong>البيانات:</strong> Campaigns, Ad Sets, Ads, Insights كاملة
+  </div>
+</div>
 
-  <div class="conn-card">
-    <div class="conn-head">
-      <div class="conn-icon" style="background:rgba(124,106,247,.15)">🤖</div>
-      <div>
-        <div class="conn-name">OpenRouter AI Key</div>
-        <div class="conn-desc">مفتاح التحليل الذكي فقط، بدون علاقة بربط المنصات.</div>
-      </div>
+<!-- SNAPCHAT -->
+<div class="conn-card" id="card-snap">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(255,252,0,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg></div>
+    <div>
+      <div class="conn-name">Snapchat Ads</div>
+      <div class="conn-desc">Snapchat Marketing API</div>
     </div>
-    <div class="g2">
-      <div>
-        <label class="fl">API Key</label>
-        <input type="password" id="s-or-key" placeholder="sk-or-v1-..." oninput="syncORKey()">
-        <div style="font-size:10px;color:var(--muted);margin-top:3px">من openrouter.ai/keys</div>
-      </div>
-      <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:6px">
-        <button class="btn btn-p" onclick="saveORKey()">💾 حفظ</button>
-        <div id="or-key-status" style="font-size:11px;min-height:16px"></div>
-      </div>
+    <div class="conn-status" id="st-snap">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
+    </div>
+  </div>
+  <button class="oauth-btn" style="background:#FFFC00;color:#000" onclick="connectSnap()" id="btn-snap">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12.166.009C9.68.009 5.34 1.284 5.34 7.23v1.274c-.47.204-.952.164-1.444.05-.132-.03-.267-.05-.4-.05-.418 0-.82.16-1.105.44-.283.28-.434.65-.414 1.034.038.718.57 1.332 1.295 1.533l.317.077c.618.134 1.66.36 2.012 1.252.198.5-.007 1.076-.613 1.718-.48.51-.74 1.192-.708 1.88.046.98.664 1.808 1.61 2.178.42.162.852.244 1.285.244.337 0 .676-.046 1.007-.136.48-.13.922-.194 1.316-.194.285 0 .554.037.8.11.693.208 1.332.678 1.962 1.38.592.66 1.264 1.06 1.948 1.06h.024c.688.001 1.357-.4 1.944-1.059.63-.7 1.27-1.172 1.963-1.38.245-.074.513-.11.8-.11.393 0 .836.063 1.315.193.33.09.67.137 1.007.137.433 0 .865-.082 1.285-.244.946-.37 1.564-1.198 1.61-2.178.032-.688-.228-1.37-.708-1.88-.606-.642-.81-1.218-.613-1.718.352-.892 1.394-1.118 2.012-1.252l.317-.077c.725-.2 1.257-.815 1.295-1.533.02-.383-.13-.754-.414-1.033-.284-.28-.687-.44-1.105-.44-.133 0-.268.02-.4.05-.492.113-.974.153-1.444-.05V7.23C18.661 1.284 14.65.009 12.166.009z" fill="#FFFC00"/></svg> تسجيل الدخول بـ Snapchat
+  </button>
+  <div class="conn-info">
+    <strong>ملاحظة:</strong> يحتاج موافقة Snapchat Marketing API<br>
+    <strong>البيانات:</strong> Campaigns, Ad Squads, Ads, Stats
+  </div>
+</div>
+
+<!-- TIKTOK -->
+<div class="conn-card" id="card-tiktok">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(255,0,80,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg></div>
+    <div>
+      <div class="conn-name">TikTok Ads</div>
+      <div class="conn-desc">TikTok for Business API</div>
+    </div>
+    <div class="conn-status" id="st-tiktok">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
+    </div>
+  </div>
+  <button class="oauth-btn" style="background:#FF0050;color:#fff" onclick="connectTikTok()" id="btn-tiktok">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" fill="#FF0050"/></svg> تسجيل الدخول بـ TikTok
+  </button>
+  <div class="conn-info">
+    <strong>ملاحظة:</strong> يحتاج TikTok Business API Access<br>
+    <strong>البيانات:</strong> Campaigns, Ad Groups, Ads, Reports
+  </div>
+</div>
+
+<!-- GOOGLE ANALYTICS -->
+<div class="conn-card" id="card-ga">
+  <div class="conn-head">
+    <div class="conn-icon" style="background:rgba(234,67,53,.1)"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></div>
+    <div>
+      <div class="conn-name">Google Analytics 4</div>
+      <div class="conn-desc">GA4 Data API — Service Account</div>
+    </div>
+    <div class="conn-status" id="st-ga">
+      <span style="background:rgba(255,255,255,.06);padding:3px 10px;border-radius:12px;font-size:10px">غير مربوط</span>
+    </div>
+  </div>
+  <div style="margin-bottom:10px">
+    <label class="fl">Property ID</label>
+    <input type="text" id="ga-prop-setup" placeholder="317096886" oninput="testGA()">
+    <div style="font-size:10px;color:var(--muted);margin-top:3px">من GA4 → Admin → Property Settings → Property ID</div>
+  </div>
+  <button class="oauth-btn" style="background:#4285F4;color:#fff" onclick="testGA()" id="btn-ga">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> اختبار الاتصال
+  </button>
+  <div class="conn-info" id="ga-setup-info">
+    <strong>Service Account:</strong> محفوظ على السيرفر ✅<br>
+    <strong>البيانات:</strong> Sessions, Users, Revenue, Funnel, Channels
+  </div>
+</div>
+
+</div>
+
+<!-- AI KEY -->
+<div class="card" style="margin-top:12px">
+  <div class="card-title">🤖 OpenRouter AI Key</div>
+  <div class="g2">
+    <div>
+      <label class="fl">API Key</label>
+      <input type="password" id="s-or-key" placeholder="sk-or-v1-..." oninput="syncORKey()">
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">من <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent)">openrouter.ai/keys</a> — مجاني</div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:6px">
+      <button class="btn btn-p" onclick="saveORKey()">💾 حفظ</button>
+      <div id="or-key-status" style="font-size:11px;min-height:16px"></div>
     </div>
   </div>
 </div>
+
 </div>
 <!-- END SETUP -->
 </div>
@@ -1550,6 +1646,82 @@ tr.today-row td:first-child{border-right:2px solid var(--v)}
 </div><!-- end shell -->
 
 <script>
+// ══ SUPABASE CONFIG ══
+var SUPA_URL = 'https://wegbjbrhygqqtczmqvoy.supabase.co';
+var SUPA_KEY = 'sb_publishable_1nnAuwoF7B0_JYwz344CTw_fvWlLCYwAHHkzEkPOUMNHo';
+var WORKSPACE_ID = 'default';
+
+var SB = {
+  from: function(table) {
+    var q = { _t:table, _f:[], _lim:null, _ord:null, _sel:'*' };
+    q.select = function(s){ q._sel=s||'*'; return q; };
+    q.eq  = function(c,v){ q._f.push(c+'=eq.'+v); return q; };
+    q.gte = function(c,v){ q._f.push(c+'=gte.'+v); return q; };
+    q.lte = function(c,v){ q._f.push(c+'=lte.'+v); return q; };
+    q.order = function(c,o){ q._ord=c+(o&&o.ascending===false?'.desc':'.asc'); return q; };
+    q.limit = function(n){ q._lim=n; return q; };
+    q.get = async function(){
+      var url=SUPA_URL+'/rest/v1/'+q._t+'?select='+encodeURIComponent(q._sel);
+      q._f.forEach(function(f){url+='&'+f;});
+      if(q._ord) url+='&order='+q._ord;
+      if(q._lim) url+='&limit='+q._lim;
+      var r=await fetch(url,{headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});
+      var d=await r.json();
+      return {data:Array.isArray(d)?d:[],error:d.error||null};
+    };
+    return q;
+  }
+};
+
+async function syncMetaToDB() {
+  var token = getCookie('meta_token') || (document.getElementById('m-token')?document.getElementById('m-token').value.trim():'');
+  var acc   = document.getElementById('m-acc')?document.getElementById('m-acc').value.trim():'';
+  if(!acc) acc = localStorage.getItem('ma')||'';
+  var st = document.getElementById('sync-status');
+  if(!token||!acc){ if(st){st.textContent='اربط Meta من Setup اولاً';st.style.color='var(--am)';}return; }
+  if(st){st.innerHTML='<span class="spin">↻</span> سحب من Meta وحفظ في DB...';st.style.color='var(--v2)';}
+  try {
+    var r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'sync_meta',workspace_id:WORKSPACE_ID,account_id:acc,token:token,
+        date_from:getDateDaysAgo(30),date_to:todayStr()})});
+    var d=await r.json();
+    if(d.error) throw new Error(d.error);
+    if(st){st.innerHTML='✅ تم! '+d.rows_saved+' صف محفوظ في DB';st.style.color='var(--g)';}
+    await loadDashboardFromDB();
+  } catch(e){
+    if(st){st.textContent='❌ '+e.message;st.style.color='var(--red)';}
+  }
+}
+
+async function loadDashboardFromDB() {
+  try {
+    var res=await SB.from('fact_performance')
+      .select('date,platform,campaign_name,spend,revenue,clicks,conversions,roas,cpa,impressions')
+      .eq('workspace_id',WORKSPACE_ID)
+      .gte('date',getDateDaysAgo(30))
+      .order('date',{ascending:false})
+      .limit(500).get();
+    if(res.error||!res.data.length) return;
+    var rows=res.data;
+    var T=rows.reduce(function(a,r){
+      a.spend+=parseFloat(r.spend)||0;a.rev+=parseFloat(r.revenue)||0;
+      a.clicks+=parseInt(r.clicks)||0;a.conv+=parseInt(r.conversions)||0;
+      return a;
+    },{spend:0,rev:0,clicks:0,conv:0});
+    var roas=T.spend>0?(T.rev/T.spend).toFixed(2):0;
+    var cpa=T.conv>0?(T.spend/T.conv).toFixed(2):0;
+    var kvs={'k-spend':'$'+T.spend.toFixed(0),'k-rev':'$'+T.rev.toFixed(0),
+             'k-pur':T.conv,'k-roas':roas+'x','k-cpa':'$'+cpa};
+    Object.keys(kvs).forEach(function(k){var el=document.getElementById(k);if(el)el.textContent=kvs[k];});
+    var badge=document.getElementById('db-badge');
+    if(badge){badge.style.display='flex';badge.textContent='🗄️ DB · '+rows.length+' صف';}
+  } catch(e){ console.error('DB load:',e); }
+}
+
+function getDateDaysAgo(n){var d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
+function todayStr(){return new Date().toISOString().split('T')[0];}
+
+
 
 
 
@@ -3404,6 +3576,7 @@ async function syncPlatform(plat) {
       var acc   = document.getElementById('m-acc').value.trim().replace('act_','');
       if (!token || !acc) { st.innerHTML = '⚠️ ادخل Meta Token وAccount ID في Campaign Data أولاً'; st.style.color='var(--amber)'; return; }
       await syncMetaDPT(token, acc, month, year);
+      await syncMetaToDB();
       st.innerHTML = '✅ Meta — تم السحب بنجاح'; st.style.color = 'var(--green)';
     } else if (plat === 'google') {
       var prop = document.getElementById('ga-prop').value.trim();
@@ -3803,225 +3976,6 @@ var DPT_NAMES = {meta:'Meta Ads', google:'Google Ads', snap:'Snapchat', tiktok:'
 
 
 
-
-// ═══════════════════════════════════════════
-// META LIVE UPDATE — Added by ChatGPT
-// Uses backend endpoints only. No manual token fields.
-// ═══════════════════════════════════════════
-
-function connectMeta() {
-  window.location.href = '/api/meta/auth';
-}
-
-function fmtMoney(v) {
-  return '$' + Number(v || 0).toLocaleString(undefined, {maximumFractionDigits: 0});
-}
-
-function safeSet(id, value) {
-  var el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
-
-function mapMetaRowsToWD(rows) {
-  return (rows || []).map(function(c, i) {
-    var spend = Number(c.spend || 0);
-    var revenue = Number(c.revenue || c.rev || 0);
-    var purchases = Number(c.purchases || c.pur || 0);
-    var clicks = Number(c.clicks || 0);
-    var lp = Number(c.lp || c.landing_page_views || Math.round(clicks * 0.75));
-    var atc = Number(c.atc || Math.round(purchases * 2));
-    var co = Number(c.co || Math.round(purchases * 1.35));
-
-    return {
-      w: 'C' + (i + 1),
-      d: c.campaign_name || c.name || 'Meta Campaign',
-      spend: spend,
-      clicks: clicks,
-      lp: lp,
-      atc: atc,
-      co: co,
-      pur: purchases,
-      rev: revenue,
-      hook: 0,
-      roas_live: Number(c.roas || (spend > 0 ? revenue / spend : 0)),
-      cpa_live: Number(c.cpa || (purchases > 0 ? spend / purchases : 0)),
-      ctr_live: Number(c.ctr || 0),
-      cpm_live: Number(c.cpm || 0)
-    };
-  });
-}
-
-function updateLiveKPIs(rows) {
-  var spend = rows.reduce(function(s, r) { return s + Number(r.spend || 0); }, 0);
-  var revenue = rows.reduce(function(s, r) { return s + Number(r.rev || 0); }, 0);
-  var purchases = rows.reduce(function(s, r) { return s + Number(r.pur || 0); }, 0);
-  var roas = spend > 0 ? revenue / spend : 0;
-  var cpa = purchases > 0 ? spend / purchases : 0;
-
-  safeSet('k-spend', fmtMoney(spend));
-  safeSet('k-pur', Math.round(purchases).toLocaleString());
-  safeSet('k-rev', fmtMoney(revenue));
-  safeSet('k-roas', roas.toFixed(2) + 'x');
-  safeSet('k-cpa', '$' + cpa.toFixed(2));
-
-  var ai = document.getElementById('dash-ai');
-  if (ai) {
-    ai.textContent =
-      '✅ تم تحميل بيانات Meta الحقيقية من API\n' +
-      'الإنفاق: ' + fmtMoney(spend) + '\n' +
-      'الإيراد: ' + fmtMoney(revenue) + '\n' +
-      'المشتريات: ' + Math.round(purchases) + '\n' +
-      'ROAS: ' + roas.toFixed(2) + 'x\n' +
-      'CPA: $' + cpa.toFixed(2);
-  }
-}
-
-async function loadMetaLiveDashboard() {
-  var st = document.getElementById('meta-live-status');
-  try {
-    if (st) st.innerHTML = '<span class="live-ok">جاري تحميل بيانات Meta...</span>';
-
-    var res = await fetch('/api/meta/full-insights');
-    var json = await res.json();
-
-    if (!json.success || !Array.isArray(json.data)) {
-      if (st) st.innerHTML = '<span class="live-error">Meta API Error</span>';
-      console.error('Meta API Error', json);
-      return;
-    }
-
-    WD = mapMetaRowsToWD(json.data);
-    updateLiveKPIs(WD);
-
-    if (typeof buildWeeklyTable === 'function') buildWeeklyTable();
-    if (typeof buildCharts === 'function') buildCharts();
-
-    if (st) {
-      st.innerHTML =
-        '<span class="live-ok">✅ Meta متصل — تم تحميل ' +
-        WD.length +
-        ' Campaigns لايف</span>';
-    }
-
-    var cc = document.getElementById('conn-count');
-    if (cc) cc.textContent = '1/1';
-
-    console.log('✅ Meta live dashboard loaded', WD);
-  } catch (e) {
-    if (st) st.innerHTML = '<span class="live-error">فشل تحميل Meta Live</span>';
-    console.error(e);
-  }
-}
-
-// Override old manual Meta fetch to use our backend API
-async function fetchMeta() {
-  try {
-    var st = document.getElementById('m-status');
-    if (st) {
-      st.innerHTML = '<span class="spin">↻</span> جاري جلب Meta Live من السيرفر...';
-      st.style.color = 'var(--c)';
-    }
-
-    var res = await fetch('/api/meta/full-insights');
-    var json = await res.json();
-
-    if (!json.success || !Array.isArray(json.data)) {
-      if (st) {
-        st.textContent = 'Meta API Error';
-        st.style.color = 'var(--red)';
-      }
-      console.error(json);
-      return;
-    }
-
-    var rows = json.data;
-    var BC = rows.map(function(c) {
-      return {
-        name: c.campaign_name || c.name || 'Meta Campaign',
-        spend: Number(c.spend || 0),
-        imp: Number(c.impressions || 0),
-        reach: Number(c.reach || 0),
-        clicks: Number(c.clicks || 0),
-        pur: Number(c.purchases || 0),
-        rev: Number(c.revenue || 0),
-        atc: Number(c.atc || 0),
-        co: Number(c.co || 0),
-        lp: Number(c.lp || Math.round(Number(c.clicks || 0) * 0.75)),
-        hook: 0
-      };
-    });
-
-    var T = BC.reduce(function(t, c) {
-      t.spend += c.spend;
-      t.imp += c.imp;
-      t.reach += c.reach;
-      t.clicks += c.clicks;
-      t.pur += c.pur;
-      t.rev += c.rev;
-      t.atc += c.atc;
-      t.co += c.co;
-      t.lp += c.lp;
-      return t;
-    }, {spend:0, imp:0, reach:0, clicks:0, pur:0, rev:0, atc:0, co:0, lp:0});
-
-    MD = { T: T, BC: BC, rows: rows.length, preset: 'last_30d', level: 'campaign' };
-    MRAW = rows;
-
-    if (typeof buildMetToggle === 'function') buildMetToggle();
-    if (typeof reRender === 'function') reRender();
-
-    var results = document.getElementById('m-results');
-    if (results) results.style.display = 'block';
-
-    var kpis = document.getElementById('m-kpis');
-    if (kpis) {
-      var roas = T.spend > 0 ? T.rev / T.spend : 0;
-      var cpa = T.pur > 0 ? T.spend / T.pur : 0;
-      var ctr = T.imp > 0 ? T.clicks / T.imp * 100 : 0;
-      kpis.innerHTML = [
-        {l:'انفاق',v:fmtMoney(T.spend),c:'#58A6FF'},
-        {l:'مشتريات',v:Math.round(T.pur),c:'#00E5A0'},
-        {l:'ايراد',v:fmtMoney(T.rev),c:'#00E5A0'},
-        {l:'ROAS',v:roas.toFixed(2)+'x',c:roas>=3?'#00E5A0':'#FFB547'},
-        {l:'CPA',v:'$'+cpa.toFixed(2),c:'#FFB547'},
-        {l:'CTR',v:ctr.toFixed(2)+'%',c:'#58A6FF'}
-      ].map(function(k){
-        return '<div class="kpi"><div class="kpi-l">'+k.l+'</div><div class="kpi-v" style="font-size:16px;color:'+k.c+'">'+k.v+'</div></div>';
-      }).join('');
-    }
-
-    WD = mapMetaRowsToWD(rows);
-    updateLiveKPIs(WD);
-    if (typeof buildWeeklyTable === 'function') buildWeeklyTable();
-    if (typeof buildCharts === 'function') buildCharts();
-
-    if (st) {
-      st.textContent = '✅ تم جلب ' + rows.length + ' حملة من Meta Live';
-      st.style.color = 'var(--g)';
-    }
-  } catch (e) {
-    console.error(e);
-    var st2 = document.getElementById('m-status');
-    if (st2) {
-      st2.textContent = 'خطأ: ' + e.message;
-      st2.style.color = 'var(--red)';
-    }
-  }
-}
-
-function handleMetaOAuthStatus() {
-  var params = new URLSearchParams(window.location.search);
-  if (params.get('auth') === 'success') {
-    try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
-    loadMetaLiveDashboard();
-  }
-  if (params.get('auth') === 'error') {
-    var msg = params.get('msg') || 'Meta Auth Error';
-    alert('Meta Error: ' + decodeURIComponent(msg));
-  }
-}
-
-
 window.onload=function(){
   try{var k=localStorage.getItem('or_key');if(k){document.getElementById('apiKeyInput').value=k;document.getElementById('s-or-key').value=k;checkKey();}}catch(e){}
   try{
@@ -4034,10 +3988,8 @@ window.onload=function(){
   updateStatusBar();
   try { var gp=localStorage.getItem('ga_prop'); if(gp){document.getElementById('ga-prop').value=gp; var gps=document.getElementById('ga-prop-setup'); if(gps)gps.value=gp; setConnected('ga','متصل ✅');} } catch(e) {}
   handleOAuthCallback();
-  handleMetaOAuthStatus();
   buildWeeklyTable();
   buildCharts();
-  loadMetaLiveDashboard();
   renderFunnel();
   buildMetToggle();
   renderLB();
