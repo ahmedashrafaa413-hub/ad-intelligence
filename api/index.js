@@ -10,6 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+/*
+|--------------------------------------------------------------------------
+| DATABASE
+|--------------------------------------------------------------------------
+*/
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -27,16 +33,14 @@ app.get("/api", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
 
-    res.json({
+    return res.json({
       success: true,
       message: "Backend is running 🚀",
       database: "Connected",
       time: result.rows[0].now,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
     });
@@ -50,7 +54,7 @@ app.get("/api", async (req, res) => {
 */
 
 app.get("/api/meta/test", async (req, res) => {
-  res.json({
+  return res.json({
     success: true,
     provider: "Meta Ads",
     message: "Meta connector ready 🚀",
@@ -59,7 +63,7 @@ app.get("/api/meta/test", async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
-| META CAMPAIGNS REAL API
+| META CAMPAIGNS
 |--------------------------------------------------------------------------
 */
 
@@ -149,12 +153,8 @@ app.get("/api/meta/insights", async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
-| SERVER
+| EXPORT APP FOR VERCEL
 |--------------------------------------------------------------------------
 */
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
