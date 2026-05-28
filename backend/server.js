@@ -17,10 +17,10 @@ const pool = new Pool({
   },
 });
 
-app.get("/", async (req, res) => {
+app.get("/api", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
-    
+
     res.json({
       success: true,
       message: "Backend is running 🚀",
@@ -37,9 +37,5 @@ app.get("/", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
 ```
