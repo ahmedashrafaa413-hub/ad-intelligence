@@ -8,31 +8,29 @@ module.exports = async function handler(req, res) {
     if (!accessToken || !accountId) {
       return res.status(500).json({
         success: false,
-        error: "META_ACCESS_TOKEN or META_ACCOUNT_ID is missing in Vercel Environment Variables",
+        error: "META_ACCESS_TOKEN or META_ACCOUNT_ID missing",
       });
     }
 
-    const url = `https://graph.facebook.com/v19.0/act_${accountId}/campaigns`;
-
-    const response = await axios.get(url, {
-      params: {
-        access_token: accessToken,
-        fields: "id,name,status,objective,daily_budget,lifetime_budget,created_time,updated_time",
-        limit: 100,
-      },
-    });
+    const response = await axios.get(
+      `https://graph.facebook.com/v19.0/act_${accountId}/campaigns`,
+      {
+        params: {
+          access_token: accessToken,
+          fields:
+            "id,name,status,objective,daily_budget,lifetime_budget",
+        },
+      }
+    );
 
     return res.status(200).json({
       success: true,
       provider: "Meta Ads",
-      account_id: accountId,
-      campaigns: response.data.data || [],
-      paging: response.data.paging || null,
+      campaigns: response.data.data,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      provider: "Meta Ads",
       error: error.response?.data || error.message,
     });
   }
