@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
 
+const metaRoutes = require("./connectors/meta");
+
 const app = express();
 
 app.use(cors());
@@ -16,6 +18,8 @@ const pool = new Pool({
   },
 });
 
+app.use("/api", metaRoutes);
+
 app.get("/api", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -27,25 +31,8 @@ app.get("/api", async (req, res) => {
       time: result.rows[0].now,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
+    console.error(error);
 
-app.get("/api/campaigns", async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT * FROM campaigns
-      ORDER BY created_at DESC
-    `);
-
-    res.json({
-      success: true,
-      data: result.rows,
-    });
-  } catch (error) {
     res.status(500).json({
       success: false,
       error: error.message,
