@@ -1,18 +1,29 @@
-const express = require("express");
+const axios = require("axios");
 
-const router = express.Router();
+module.exports = async (req, res) => {
+  try {
+    const accessToken = process.env.META_ACCESS_TOKEN;
 
-router.get("/", async (req, res) => {
-  res.json({
-    success: true,
-    data: [
+    const response = await axios.get(
+      "https://graph.facebook.com/v19.0/me/adaccounts",
       {
-        id: "act_123456",
-        name: "Demo Account",
-        currency: "USD",
-      },
-    ],
-  });
-});
+        params: {
+          access_token: accessToken,
+          fields: "id,name,account_status,currency"
+        }
+      }
+    );
 
-module.exports = router;
+    res.status(200).json({
+      success: true,
+      provider: "Meta Ads",
+      accounts: response.data.data
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message
+    });
+  }
+};
