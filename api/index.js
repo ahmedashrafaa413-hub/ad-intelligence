@@ -1,6 +1,9 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const axios = require("axios");
 
 const app = express();
 
@@ -14,6 +17,12 @@ const pool = new Pool({
   },
 });
 
+/*
+|--------------------------------------------------------------------------
+| ROOT API
+|--------------------------------------------------------------------------
+*/
+
 app.get("/api", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -25,12 +34,20 @@ app.get("/api", async (req, res) => {
       time: result.rows[0].now,
     });
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({
       success: false,
       error: error.message,
     });
   }
 });
+
+/*
+|--------------------------------------------------------------------------
+| META TEST
+|--------------------------------------------------------------------------
+*/
 
 app.get("/api/meta/test", async (req, res) => {
   res.json({
@@ -40,48 +57,104 @@ app.get("/api/meta/test", async (req, res) => {
   });
 });
 
+/*
+|--------------------------------------------------------------------------
+| META CAMPAIGNS REAL API
+|--------------------------------------------------------------------------
+*/
+
 app.get("/api/meta/campaigns", async (req, res) => {
-  res.json({
-    success: true,
-    provider: "Meta Ads",
-    data: [
+  try {
+    const accessToken = process.env.META_ACCESS_TOKEN;
+    const accountId = process.env.META_ACCOUNT_ID;
+
+    if (!accessToken || !accountId) {
+      return res.status(500).json({
+        success: false,
+        error: "META_ACCESS_TOKEN or META_ACCOUNT_ID missing",
+      });
+    }
+
+    const response = await axios.get(
+      `https://graph.facebook.com/v19.0/act_${accountId}/campaigns`,
       {
-        id: "cmp_001",
-        name: "Prospecting Campaign",
-        status: "ACTIVE",
-        objective: "CONVERSIONS",
-        spend: 250,
-      },
-    ],
-  });
+        params: {
+          access_token: accessToken,
+          fields:
+            "id,name,status,objective,daily_budget,lifetime_budget",
+          limit: 100,
+        },
+      }
+    );
+
+    return res.json({
+      success: true,
+      provider: "Meta Ads",
+      campaigns: response.data.data || [],
+    });
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message,
+    });
+  }
 });
 
-app.get("/api/meta/accounts", async (req, res) => {
-  res.json({
-    success: true,
-    provider: "Meta Ads",
-    data: [
-      {
-        id: "act_123456",
-        name: "Demo Account",
-        currency: "USD",
-      },
-    ],
-  });
-});
+/*
+|--------------------------------------------------------------------------
+| META INSIGHTS
+|--------------------------------------------------------------------------
+*/
 
 app.get("/api/meta/insights", async (req, res) => {
-  res.json({
-    success: true,
-    provider: "Meta Ads",
-    insights: {
-      spend: 1200,
-      impressions: 45000,
-      clicks: 2100,
-      ctr: 4.5,
-      roas: 3.8,
-    },
-  });
+  try {
+    const accessToken = process.env.META_ACCESS_TOKEN;
+    const accountId = process.env.META_ACCOUNT_ID;
+
+    if (!accessToken || !accountId) {
+      return res.status(500).json({
+        success: false,
+        error: "META_ACCESS_TOKEN or META_ACCOUNT_ID missing",
+      });
+    }
+
+    const response = await axios.get(
+      `https://graph.facebook.com/v19.0/act_${accountId}/insights`,
+      {
+        params: {
+          access_token: accessToken,
+          fields:
+            "campaign_name,impressions,clicks,ctr,cpc,spend,reach",
+          date_preset: "last_30d",
+        },
+      }
+    );
+
+    return res.json({
+      success: true,
+      provider: "Meta Ads",
+      insights: response.data.data || [],
+    });
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message,
+    });
+  }
 });
 
-module.exports = app;
+/*
+|--------------------------------------------------------------------------
+| SERVER
+|--------------------------------------------------------------------------
+*/
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
