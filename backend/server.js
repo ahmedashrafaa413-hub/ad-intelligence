@@ -1,4 +1,3 @@
-```javascript
 require("dotenv").config();
 
 const express = require("express");
@@ -38,4 +37,3 @@ app.get("/api", async (req, res) => {
 });
 
 module.exports = app;
-```
