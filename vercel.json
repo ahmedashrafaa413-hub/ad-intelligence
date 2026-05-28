@@ -15,14 +15,10 @@
     },
     {
       "src": "/api/meta/full-insights",
-      "dest": "/api/meta/full-insights.js"
+      "dest": "/api/meta/insights.js"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/",
+      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
