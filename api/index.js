@@ -1,4 +1,13 @@
+require("dotenv").config();
+
+const express = require("express");
+const cors = require("cors");
 const { Pool } = require("pg");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -7,20 +16,41 @@ const pool = new Pool({
   },
 });
 
-module.exports = async function handler(req, res) {
+app.get("/api", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
 
-    return res.status(200).json({
+    res.json({
       success: true,
-      message: "API is running 🚀",
+      message: "Backend is running 🚀",
       database: "Connected",
       time: result.rows[0].now,
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: error.message,
     });
   }
-};
+});
+
+app.get("/api/campaigns", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT * FROM campaigns
+      ORDER BY created_at DESC
+    `);
+
+    res.json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+module.exports = app;
