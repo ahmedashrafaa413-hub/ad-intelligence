@@ -2,11 +2,27 @@
   "version": 2,
   "routes": [
     {
+      "src": "/api/meta/auth",
+      "dest": "/api/meta/auth.js"
+    },
+    {
+      "src": "/api/meta/callback",
+      "dest": "/api/meta/callback.js"
+    },
+    {
+      "src": "/api/meta/campaigns",
+      "dest": "/api/meta/campaigns.js"
+    },
+    {
+      "src": "/api/meta/full-insights",
+      "dest": "/api/meta/full-insights.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/index.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/",
       "dest": "/index.html"
     }
   ]
