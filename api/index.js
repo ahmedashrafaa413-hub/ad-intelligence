@@ -63,6 +63,78 @@ app.get("/api/meta/test", async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
+| META AUTH
+|--------------------------------------------------------------------------
+*/
+
+app.get("/api/meta/auth", async (req, res) => {
+  try {
+    const appId = process.env.META_APP_ID;
+    const redirectUri = process.env.META_REDIRECT_URI;
+
+    const authUrl =
+      `https://www.facebook.com/v19.0/dialog/oauth` +
+      `?client_id=${appId}` +
+      `&redirect_uri=${redirectUri}` +
+      `&scope=ads_read,ads_management,business_management`;
+
+    return res.redirect(authUrl);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+/*
+|--------------------------------------------------------------------------
+| META CALLBACK
+|--------------------------------------------------------------------------
+*/
+
+app.get("/api/meta/callback", async (req, res) => {
+  try {
+    const code = req.query.code;
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        error: "Authorization code missing",
+      });
+    }
+
+    const response = await axios.get(
+      "https://graph.facebook.com/v19.0/oauth/access_token",
+      {
+        params: {
+          client_id: process.env.META_APP_ID,
+          client_secret: process.env.META_APP_SECRET,
+          redirect_uri: process.env.META_REDIRECT_URI,
+          code,
+        },
+      }
+    );
+
+    const accessToken = response.data.access_token;
+
+    return res.json({
+      success: true,
+      message: "Meta OAuth connected successfully 🚀",
+      access_token: accessToken,
+    });
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message,
+    });
+  }
+});
+
+/*
+|--------------------------------------------------------------------------
 | META CAMPAIGNS
 |--------------------------------------------------------------------------
 */
