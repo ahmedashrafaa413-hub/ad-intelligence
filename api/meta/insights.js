@@ -6,19 +6,15 @@ function getCookie(req, name) {
 
 module.exports = async (req, res) => {
   try {
-    const accessToken =
-      req.query.token ||
-      getCookie(req, "meta_token") ||
-      getCookie(req, "meta_access_token");
+    const token = req.query.token || getCookie(req, "meta_token");
+    const accountId = req.query.account_id;
 
-    if (!accessToken) {
+    if (!token) {
       return res.status(401).json({
         success: false,
         error: "Not connected to Meta"
       });
     }
-
-    const accountId = req.query.account_id;
 
     if (!accountId) {
       return res.status(400).json({
@@ -29,10 +25,10 @@ module.exports = async (req, res) => {
 
     const url =
       `https://graph.facebook.com/v19.0/${accountId}/insights` +
-      `?fields=campaign_name,spend,impressions,reach,clicks,cpc,cpm,ctr` +
-      `&date_preset=last_30d` +
-      `&level=campaign` +
-      `&access_token=${encodeURIComponent(accessToken)}`;
+      "?fields=campaign_name,spend,impressions,reach,clicks,cpc,cpm,ctr" +
+      "&date_preset=last_30d" +
+      "&level=campaign" +
+      `&access_token=${encodeURIComponent(token)}`;
 
     const response = await fetch(url);
     const data = await response.json();
@@ -51,7 +47,6 @@ module.exports = async (req, res) => {
       data: data.data || [],
       paging: data.paging || null
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
