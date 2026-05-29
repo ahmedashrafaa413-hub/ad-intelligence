@@ -4,329 +4,182 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AdIntelligence</title>
-
   <style>
-    body {
-      margin: 0;
-      background: #0d0f1f;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      padding: 40px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    h1 {
-      font-size: 34px;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      color: #aaa;
-      margin-bottom: 30px;
-    }
-
-    button {
-      background: #6557ff;
-      color: white;
-      border: none;
-      padding: 12px 22px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      margin: 5px;
-    }
-
-    button:hover {
-      background: #7b6dff;
-    }
-
-    .card {
-      background: #171a33;
-      border: 1px solid #2d3155;
-      border-radius: 14px;
-      padding: 18px;
-      margin: 14px 0;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin: 25px 0;
-    }
-
-    .kpi {
-      background: #171a33;
-      border: 1px solid #2d3155;
-      border-radius: 14px;
-      padding: 20px;
-    }
-
-    .kpi span {
-      color: #aaa;
-      font-size: 13px;
-    }
-
-    .kpi strong {
-      display: block;
-      font-size: 26px;
-      margin-top: 8px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #171a33;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-top: 20px;
-    }
-
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #2d3155;
-      text-align: right;
-      font-size: 14px;
-    }
-
-    th {
-      background: #202447;
-      color: #bbb;
-    }
-
-    .success {
-      color: #3ee68b;
-    }
-
-    .error {
-      color: #ff6b6b;
-    }
-
-    .small {
-      color: #aaa;
-      font-size: 12px;
-    }
+    body{margin:0;background:#0b0d1a;color:#fff;font-family:Arial,sans-serif}
+    .wrap{max-width:1200px;margin:auto;padding:40px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+    h1{font-size:34px;margin:0}
+    p{color:#aeb3c9}
+    .card{background:#171a33;border:1px solid #30365f;border-radius:18px;padding:22px;margin-bottom:20px}
+    button,select{background:#6657ff;color:white;border:0;border-radius:10px;padding:13px 18px;font-weight:bold;cursor:pointer}
+    select{width:100%;background:#1d2140;margin-top:10px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+    .kpi{background:#1a1e3b;border:1px solid #30365f;border-radius:16px;padding:20px}
+    .kpi span{color:#9da3bd;font-size:13px}
+    .kpi strong{display:block;font-size:28px;margin-top:8px}
+    table{width:100%;border-collapse:collapse;margin-top:20px;background:#171a33;border-radius:14px;overflow:hidden}
+    th,td{padding:14px;border-bottom:1px solid #30365f;text-align:right;font-size:14px}
+    th{background:#20264a;color:#bfc5df}
+    .status{margin:15px 0;color:#3ee68b;font-weight:bold}
+    .error{color:#ff6b6b}
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <h1>🚀 AdIntelligence</h1>
-    <p class="subtitle">Looker Studio style marketing analytics platform</p>
+<div class="wrap">
 
+  <div class="top">
+    <div>
+      <h1>🚀 AdIntelligence</h1>
+      <p>Live marketing analytics dashboard powered by Meta Ads</p>
+    </div>
     <button onclick="connectMeta()">ربط Meta</button>
-    <button onclick="loadAccounts()">عرض الحسابات الإعلانية</button>
-
-    <div id="status"></div>
-    <div id="accounts"></div>
-    <div id="dashboard"></div>
   </div>
 
-  <script>
-    function connectMeta() {
-      window.location.href = "/api/meta/auth";
+  <div class="card">
+    <h2>اختيار الحساب الإعلاني</h2>
+    <button onclick="loadAccounts()">تحميل الحسابات</button>
+    <select id="accountSelect" onchange="loadDashboard()">
+      <option value="">اختر الحساب الإعلاني</option>
+    </select>
+    <div id="status" class="status"></div>
+  </div>
+
+  <div id="dashboard"></div>
+
+</div>
+
+<script>
+function connectMeta(){
+  window.location.href="/api/meta/auth";
+}
+
+function setStatus(msg,type="ok"){
+  document.getElementById("status").className = type==="error" ? "status error" : "status";
+  document.getElementById("status").innerText = msg;
+}
+
+async function loadAccounts(){
+  try{
+    setStatus("جاري تحميل الحسابات...");
+    const res = await fetch("/api/meta/accounts");
+    const json = await res.json();
+
+    if(!json.success){
+      setStatus(json.error?.message || json.error || "فشل تحميل الحسابات","error");
+      return;
     }
 
-    function setStatus(message, type = "success") {
-      document.getElementById("status").innerHTML =
-        `<p class="${type}">${message}</p>`;
-    }
+    const select = document.getElementById("accountSelect");
+    select.innerHTML = `<option value="">اختر الحساب الإعلاني</option>`;
 
-    async function loadAccounts() {
-      setStatus("جاري تحميل الحسابات...");
-
-      try {
-        const res = await fetch("/api/meta/accounts");
-        const data = await res.json();
-
-        if (!data.success) {
-          setStatus(data.error || "حدث خطأ أثناء تحميل الحسابات", "error");
-          return;
-        }
-
-        let html = `<h2>الحسابات الإعلانية</h2>`;
-
-        data.data.forEach(acc => {
-          html += `
-            <div class="card">
-              <h3>${acc.name}</h3>
-              <p class="small">ID: ${acc.id}</p>
-              <p class="small">Currency: ${acc.currency || "-"}</p>
-              <button onclick="loadInsights('${acc.id}')">
-                عرض الأداء
-              </button>
-              <button onclick="loadCampaigns('${acc.id}')">
-                عرض الحملات
-              </button>
-            </div>
-          `;
-        });
-
-        document.getElementById("accounts").innerHTML = html;
-        setStatus("تم تحميل الحسابات بنجاح ✅");
-
-      } catch (err) {
-        setStatus(err.message, "error");
-      }
-    }
-
-    async function loadCampaigns(accountId) {
-      setStatus("جاري تحميل الحملات...");
-
-      try {
-        const res = await fetch(`/api/meta/campaigns?account_id=${accountId}`);
-        const data = await res.json();
-
-        if (!data.success) {
-          setStatus(data.error?.message || data.error || "حدث خطأ", "error");
-          return;
-        }
-
-        let html = `
-          <h2>الحملات</h2>
-          <table>
-            <tr>
-              <th>اسم الحملة</th>
-              <th>الحالة</th>
-              <th>Objective</th>
-              <th>Daily Budget</th>
-            </tr>
-        `;
-
-        data.data.forEach(c => {
-          html += `
-            <tr>
-              <td>${c.name || "-"}</td>
-              <td>${c.status || "-"}</td>
-              <td>${c.objective || "-"}</td>
-              <td>${c.daily_budget || "-"}</td>
-            </tr>
-          `;
-        });
-
-        html += `</table>`;
-        document.getElementById("dashboard").innerHTML = html;
-        setStatus("تم تحميل الحملات ✅");
-
-      } catch (err) {
-        setStatus(err.message, "error");
-      }
-    }
-
-    async function loadInsights(accountId) {
-      setStatus("جاري تحميل بيانات الأداء...");
-
-      try {
-        const res = await fetch(`/api/meta/insights?account_id=${accountId}`);
-        const data = await res.json();
-
-        if (!data.success) {
-          setStatus(data.error?.message || data.error || "حدث خطأ", "error");
-          return;
-        }
-
-        let totalSpend = 0;
-        let totalClicks = 0;
-        let totalImpressions = 0;
-        let totalReach = 0;
-
-        data.data.forEach(row => {
-          totalSpend += Number(row.spend || 0);
-          totalClicks += Number(row.clicks || 0);
-          totalImpressions += Number(row.impressions || 0);
-          totalReach += Number(row.reach || 0);
-        });
-
-        const ctr = totalImpressions > 0
-          ? ((totalClicks / totalImpressions) * 100).toFixed(2)
-          : 0;
-
-        const cpc = totalClicks > 0
-          ? (totalSpend / totalClicks).toFixed(2)
-          : 0;
-
-        let html = `
-          <h2>Dashboard Live</h2>
-
-          <div class="grid">
-            <div class="kpi">
-              <span>Spend</span>
-              <strong>$${totalSpend.toFixed(2)}</strong>
-            </div>
-            <div class="kpi">
-              <span>Impressions</span>
-              <strong>${totalImpressions.toLocaleString()}</strong>
-            </div>
-            <div class="kpi">
-              <span>Reach</span>
-              <strong>${totalReach.toLocaleString()}</strong>
-            </div>
-            <div class="kpi">
-              <span>Clicks</span>
-              <strong>${totalClicks.toLocaleString()}</strong>
-            </div>
-            <div class="kpi">
-              <span>CTR</span>
-              <strong>${ctr}%</strong>
-            </div>
-            <div class="kpi">
-              <span>CPC</span>
-              <strong>$${cpc}</strong>
-            </div>
-          </div>
-
-          <h2>Campaign Performance</h2>
-
-          <table>
-            <tr>
-              <th>Campaign</th>
-              <th>Spend</th>
-              <th>Impressions</th>
-              <th>Reach</th>
-              <th>Clicks</th>
-              <th>CTR</th>
-              <th>CPC</th>
-              <th>CPM</th>
-            </tr>
-        `;
-
-        data.data.forEach(row => {
-          html += `
-            <tr>
-              <td>${row.campaign_name || "-"}</td>
-              <td>$${row.spend || 0}</td>
-              <td>${Number(row.impressions || 0).toLocaleString()}</td>
-              <td>${Number(row.reach || 0).toLocaleString()}</td>
-              <td>${Number(row.clicks || 0).toLocaleString()}</td>
-              <td>${row.ctr || 0}%</td>
-              <td>$${row.cpc || 0}</td>
-              <td>$${row.cpm || 0}</td>
-            </tr>
-          `;
-        });
-
-        html += `</table>`;
-
-        document.getElementById("dashboard").innerHTML = html;
-        setStatus("تم تحميل بيانات الأداء الحقيقية من Meta ✅");
-
-      } catch (err) {
-        setStatus(err.message, "error");
-      }
-    }
-
-    window.addEventListener("load", () => {
-      const params = new URLSearchParams(window.location.search);
-
-      if (params.get("meta") === "connected") {
-        setStatus("تم ربط Meta بنجاح ✅");
-        loadAccounts();
-      }
+    json.data.forEach(acc=>{
+      select.innerHTML += `
+        <option value="${acc.id}">
+          ${acc.name} - ${acc.currency || ""}
+        </option>
+      `;
     });
-  </script>
+
+    setStatus("تم تحميل الحسابات بنجاح ✅");
+  }catch(e){
+    setStatus(e.message,"error");
+  }
+}
+
+async function loadDashboard(){
+  const accountId = document.getElementById("accountSelect").value;
+  if(!accountId) return;
+
+  try{
+    setStatus("جاري تحميل الداشبورد...");
+
+    const [insightsRes,campaignsRes] = await Promise.all([
+      fetch(`/api/meta/insights?account_id=${accountId}`),
+      fetch(`/api/meta/campaigns?account_id=${accountId}`)
+    ]);
+
+    const insights = await insightsRes.json();
+    const campaigns = await campaignsRes.json();
+
+    if(!insights.success){
+      setStatus(insights.error?.message || insights.error || "فشل تحميل الأداء","error");
+      return;
+    }
+
+    const rows = insights.data || [];
+
+    let spend=0, impressions=0, reach=0, clicks=0;
+
+    rows.forEach(r=>{
+      spend += Number(r.spend || 0);
+      impressions += Number(r.impressions || 0);
+      reach += Number(r.reach || 0);
+      clicks += Number(r.clicks || 0);
+    });
+
+    const ctr = impressions ? ((clicks / impressions) * 100).toFixed(2) : 0;
+    const cpc = clicks ? (spend / clicks).toFixed(2) : 0;
+    const cpm = impressions ? ((spend / impressions) * 1000).toFixed(2) : 0;
+
+    let html = `
+      <div class="grid">
+        <div class="kpi"><span>Spend</span><strong>$${spend.toFixed(2)}</strong></div>
+        <div class="kpi"><span>Impressions</span><strong>${impressions.toLocaleString()}</strong></div>
+        <div class="kpi"><span>Reach</span><strong>${reach.toLocaleString()}</strong></div>
+        <div class="kpi"><span>Clicks</span><strong>${clicks.toLocaleString()}</strong></div>
+        <div class="kpi"><span>CTR</span><strong>${ctr}%</strong></div>
+        <div class="kpi"><span>CPC</span><strong>$${cpc}</strong></div>
+        <div class="kpi"><span>CPM</span><strong>$${cpm}</strong></div>
+        <div class="kpi"><span>Campaigns</span><strong>${campaigns.data ? campaigns.data.length : 0}</strong></div>
+      </div>
+
+      <div class="card">
+        <h2>أداء الحملات</h2>
+        <table>
+          <tr>
+            <th>الحملة</th>
+            <th>Spend</th>
+            <th>Impressions</th>
+            <th>Reach</th>
+            <th>Clicks</th>
+            <th>CTR</th>
+            <th>CPC</th>
+            <th>CPM</th>
+          </tr>
+    `;
+
+    rows.forEach(r=>{
+      html += `
+        <tr>
+          <td>${r.campaign_name || "-"}</td>
+          <td>$${r.spend || 0}</td>
+          <td>${Number(r.impressions || 0).toLocaleString()}</td>
+          <td>${Number(r.reach || 0).toLocaleString()}</td>
+          <td>${Number(r.clicks || 0).toLocaleString()}</td>
+          <td>${r.ctr || 0}%</td>
+          <td>$${r.cpc || 0}</td>
+          <td>$${r.cpm || 0}</td>
+        </tr>
+      `;
+    });
+
+    html += `</table></div>`;
+
+    document.getElementById("dashboard").innerHTML = html;
+    setStatus("تم تحميل الداشبورد بنجاح ✅");
+
+  }catch(e){
+    setStatus(e.message,"error");
+  }
+}
+
+window.addEventListener("load",()=>{
+  const params = new URLSearchParams(window.location.search);
+  if(params.get("meta")==="connected"){
+    setStatus("تم ربط Meta بنجاح ✅");
+    loadAccounts();
+  }
+});
+</script>
 </body>
 </html>
