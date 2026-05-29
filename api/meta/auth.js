@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
   }
 
   const redirectUri =
-    "https://ad-intelligence-an2i.vercel.app/api/meta/callback";
+    "https://ad-intelligence-platform-phi.vercel.app/api/meta/callback";
 
   const scope = [
     "ads_read",
