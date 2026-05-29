@@ -1,6 +1,15 @@
+function getCookie(req, name) {
+  const cookie = req.headers.cookie || "";
+  const match = cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
 module.exports = async (req, res) => {
   try {
-    const accessToken = req.cookies?.meta_access_token;
+    const accessToken =
+      req.query.token ||
+      getCookie(req, "meta_token") ||
+      getCookie(req, "meta_access_token");
 
     if (!accessToken) {
       return res.status(401).json({
@@ -22,10 +31,18 @@ module.exports = async (req, res) => {
       `https://graph.facebook.com/v19.0/${accountId}/insights` +
       `?fields=campaign_name,spend,impressions,reach,clicks,cpc,cpm,ctr` +
       `&date_preset=last_30d` +
-      `&access_token=${accessToken}`;
+      `&level=campaign` +
+      `&access_token=${encodeURIComponent(accessToken)}`;
 
     const response = await fetch(url);
     const data = await response.json();
+
+    if (data.error) {
+      return res.status(400).json({
+        success: false,
+        error: data.error
+      });
+    }
 
     return res.status(200).json({
       success: true,
