@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: "Meta token is missing. Please reconnect Meta."
+        error: "Not connected to Meta"
       });
     }
 
@@ -35,10 +35,10 @@ module.exports = async (req, res) => {
       provider: "Meta Ads",
       data: data.data || []
     });
-  } catch (err) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      error: err.message
+      error: error.message
     });
   }
 };
