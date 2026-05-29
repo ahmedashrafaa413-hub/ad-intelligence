@@ -7,39 +7,19 @@ function getCookie(req, name) {
 module.exports = async (req, res) => {
   try {
     const token = req.query.token || getCookie(req, "meta_token");
+    const accountId = req.query.account_id;
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        error: "Meta token is missing. Please reconnect Meta."
+        error: "Not connected to Meta"
       });
     }
 
-    let accountId = req.query.accountId;
-
     if (!accountId) {
-      const accountsRes = await fetch(
-        "https://graph.facebook.com/v19.0/me/adaccounts" +
-          "?fields=id,name,currency" +
-          `&access_token=${encodeURIComponent(token)}`
-      );
-
-      const accountsData = await accountsRes.json();
-
-      if (accountsData.error) {
-        return res.status(400).json({
-          success: false,
-          error: accountsData.error
-        });
-      }
-
-      accountId = accountsData.data?.[0]?.id;
-    }
-
-    if (!accountId) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
-        error: "No Meta ad account found"
+        error: "account_id is required"
       });
     }
 
@@ -65,10 +45,10 @@ module.exports = async (req, res) => {
       account_id: accountId,
       data: data.data || []
     });
-  } catch (err) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      error: err.message
+      error: error.message
     });
   }
 };
