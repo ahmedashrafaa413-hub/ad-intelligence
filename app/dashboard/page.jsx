@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { apiGet } from "../../lib/api";
 import { getSetting, saveSetting } from "../../lib/storage";
 
-const metrics = [
+const metricCards = [
   { key: "spend", label: "Spend", icon: "💰", format: "money" },
   { key: "impressions", label: "Impressions", icon: "👁️", format: "number" },
   { key: "clicks", label: "Clicks", icon: "🖱️", format: "number" },
-  { key: "ctr", label: "CTR", icon: "📈", format: "percent" }
+  { key: "ctr", label: "CTR", icon: "📈", format: "percent" },
+  { key: "cpc", label: "CPC", icon: "🎯", format: "money" },
+  { key: "cpm", label: "CPM", icon: "📊", format: "money" }
 ];
 
 function formatValue(value, type) {
@@ -107,28 +109,31 @@ export default function DashboardPage() {
       ? "adset_name"
       : "campaign_name";
 
+  const title =
+    level === "ad"
+      ? "Ads Performance"
+      : level === "adset"
+      ? "Ad Sets Performance"
+      : "Campaigns Performance";
+
   return (
-    <main className="dash-page">
-      <header className="dash-top">
+    <main className="dash-pro">
+      <header className="dash-pro-header">
         <div>
-          <span className="eyebrow">Meta Ads Intelligence</span>
-          <h1>Dashboard</h1>
-          <p>تحليل مباشر لأداء الحملات، الـ Ad Sets، والإعلانات.</p>
+          <span className="dash-badge">Meta Ads Intelligence</span>
+          <h1>Performance Dashboard</h1>
+          <p>تحليل احترافي لأداء الحملات، الـ Ad Sets، والإعلانات.</p>
         </div>
 
-        <button className="primary-btn" onClick={() => loadInsights()}>
-          Refresh
+        <button className="dash-refresh" onClick={() => loadInsights()}>
+          Refresh Data
         </button>
       </header>
 
-      <section className="dash-controls">
-        <div className="control-box">
+      <section className="dash-filter-grid">
+        <div className="dash-filter-card">
           <label>Ad Account</label>
-
-          <select
-            value={accountId}
-            onChange={(e) => changeAccount(e.target.value)}
-          >
+          <select value={accountId} onChange={(e) => changeAccount(e.target.value)}>
             {accounts.map((acc) => (
               <option key={acc.id} value={acc.id}>
                 {acc.name} - {acc.currency}
@@ -137,9 +142,8 @@ export default function DashboardPage() {
           </select>
         </div>
 
-        <div className="control-box">
+        <div className="dash-filter-card">
           <label>View Level</label>
-
           <select value={level} onChange={(e) => setLevel(e.target.value)}>
             <option value="campaign">Campaigns</option>
             <option value="adset">Ad Sets</option>
@@ -148,43 +152,56 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <p className={error ? "dash-error" : "dash-status"}>
+      <div className={error ? "dash-message error" : "dash-message success"}>
         {error || status}
-      </p>
+      </div>
 
-      <section className="kpi-grid">
-        {metrics.map((metric) => (
-          <div className="kpi-card-pro" key={metric.key}>
-            <div className="kpi-icon">{metric.icon}</div>
-            <span>{metric.label}</span>
-            <strong>{formatValue(totals[metric.key], metric.format)}</strong>
+      <section className="dash-kpi-grid">
+        {metricCards.map((item) => (
+          <div className="dash-kpi-card" key={item.key}>
+            <div className="dash-kpi-top">
+              <span>{item.label}</span>
+              <div>{item.icon}</div>
+            </div>
+            <strong>{formatValue(totals[item.key], item.format)}</strong>
           </div>
         ))}
       </section>
 
-      <section className="table-panel">
-        <div className="panel-head">
-          <div>
-            <h2>
-              {level === "ad"
-                ? "Ads Performance"
-                : level === "adset"
-                ? "Ad Sets Performance"
-                : "Campaigns Performance"}
-            </h2>
+      <section className="dash-insights-grid">
+        <div className="dash-insight-card">
+          <h3>Quick Read</h3>
+          <p>
+            إجمالي الإنفاق الحالي هو{" "}
+            <strong>{formatValue(totals.spend, "money")}</strong> مع CTR قدره{" "}
+            <strong>{formatValue(totals.ctr, "percent")}</strong>.
+          </p>
+        </div>
 
+        <div className="dash-insight-card">
+          <h3>Media Buyer Note</h3>
+          <p>
+            راقب الحملات ذات CPC مرتفع وCTR منخفض لأنها غالبًا تحتاج تعديل Creative أو Audience.
+          </p>
+        </div>
+      </section>
+
+      <section className="dash-table-card">
+        <div className="dash-table-head">
+          <div>
+            <h2>{title}</h2>
             <p>{rows.length} rows loaded</p>
           </div>
         </div>
 
         {rows.length === 0 ? (
-          <div className="empty-state">
+          <div className="dash-empty">
             <h3>No data yet</h3>
-            <p>اختار حساب إعلاني أو اضغط Refresh لعرض البيانات.</p>
+            <p>اختار حساب إعلاني أو اضغط Refresh Data لعرض البيانات.</p>
           </div>
         ) : (
-          <div className="table-scroll">
-            <table className="data-table">
+          <div className="dash-table-scroll">
+            <table className="dash-data-table">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -210,7 +227,7 @@ export default function DashboardPage() {
 
                   return (
                     <tr key={index}>
-                      <td className="name-cell">
+                      <td className="dash-name-cell">
                         {row[nameKey] || "Unknown"}
                       </td>
                       <td>{formatValue(spend, "money")}</td>
