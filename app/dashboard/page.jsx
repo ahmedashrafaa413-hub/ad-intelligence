@@ -1,21 +1,22 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { RefreshCw, TrendingUp, MousePointerClick, Eye, Wallet } from "lucide-react";
 import { apiGet } from "../../lib/api";
 import { getSetting, saveSetting } from "../../lib/storage";
 
 const metrics = [
-  { key: "spend", label: "Spend", icon: Wallet, format: "money" },
-  { key: "impressions", label: "Impressions", icon: Eye, format: "number" },
-  { key: "clicks", label: "Clicks", icon: MousePointerClick, format: "number" },
-  { key: "ctr", label: "CTR", icon: TrendingUp, format: "percent" }
+  { key: "spend", label: "Spend", icon: "💰", format: "money" },
+  { key: "impressions", label: "Impressions", icon: "👁️", format: "number" },
+  { key: "clicks", label: "Clicks", icon: "🖱️", format: "number" },
+  { key: "ctr", label: "CTR", icon: "📈", format: "percent" }
 ];
 
 function formatValue(value, type) {
   const num = Number(value || 0);
+
   if (type === "money") return `$${num.toFixed(2)}`;
   if (type === "percent") return `${num.toFixed(2)}%`;
+
   return num.toLocaleString();
 }
 
@@ -32,14 +33,18 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (accountId) loadInsights(accountId, level);
+    if (accountId) {
+      loadInsights(accountId, level);
+    }
   }, [accountId, level]);
 
   async function loadAccounts() {
     try {
       setError("");
+
       const data = await apiGet("/api/meta/accounts");
       const list = data.data || [];
+
       const saved = getSetting("primary_meta_account", "");
       const selected = saved || list[0]?.id || "";
 
@@ -47,7 +52,7 @@ export default function DashboardPage() {
       setAccountId(selected);
       setStatus("Accounts loaded");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to load accounts");
       setStatus("Connection error");
     }
   }
@@ -65,7 +70,7 @@ export default function DashboardPage() {
       setStatus("Dashboard updated");
     } catch (err) {
       setRows([]);
-      setError(err.message);
+      setError(err.message || "Failed to load insights");
       setStatus("Failed to load data");
     }
   }
@@ -96,7 +101,11 @@ export default function DashboardPage() {
   }, [rows]);
 
   const nameKey =
-    level === "ad" ? "ad_name" : level === "adset" ? "adset_name" : "campaign_name";
+    level === "ad"
+      ? "ad_name"
+      : level === "adset"
+      ? "adset_name"
+      : "campaign_name";
 
   return (
     <main className="dash-page">
@@ -108,7 +117,6 @@ export default function DashboardPage() {
         </div>
 
         <button className="primary-btn" onClick={() => loadInsights()}>
-          <RefreshCw size={16} />
           Refresh
         </button>
       </header>
@@ -116,7 +124,11 @@ export default function DashboardPage() {
       <section className="dash-controls">
         <div className="control-box">
           <label>Ad Account</label>
-          <select value={accountId} onChange={(e) => changeAccount(e.target.value)}>
+
+          <select
+            value={accountId}
+            onChange={(e) => changeAccount(e.target.value)}
+          >
             {accounts.map((acc) => (
               <option key={acc.id} value={acc.id}>
                 {acc.name} - {acc.currency}
@@ -127,6 +139,7 @@ export default function DashboardPage() {
 
         <div className="control-box">
           <label>View Level</label>
+
           <select value={level} onChange={(e) => setLevel(e.target.value)}>
             <option value="campaign">Campaigns</option>
             <option value="adset">Ad Sets</option>
@@ -135,22 +148,18 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <p className={error ? "dash-error" : "dash-status"}>{error || status}</p>
+      <p className={error ? "dash-error" : "dash-status"}>
+        {error || status}
+      </p>
 
       <section className="kpi-grid">
-        {metrics.map((metric) => {
-          const Icon = metric.icon;
-
-          return (
-            <div className="kpi-card-pro" key={metric.key}>
-              <div className="kpi-icon">
-                <Icon size={18} />
-              </div>
-              <span>{metric.label}</span>
-              <strong>{formatValue(totals[metric.key], metric.format)}</strong>
-            </div>
-          );
-        })}
+        {metrics.map((metric) => (
+          <div className="kpi-card-pro" key={metric.key}>
+            <div className="kpi-icon">{metric.icon}</div>
+            <span>{metric.label}</span>
+            <strong>{formatValue(totals[metric.key], metric.format)}</strong>
+          </div>
+        ))}
       </section>
 
       <section className="table-panel">
@@ -163,6 +172,7 @@ export default function DashboardPage() {
                 ? "Ad Sets Performance"
                 : "Campaigns Performance"}
             </h2>
+
             <p>{rows.length} rows loaded</p>
           </div>
         </div>
@@ -200,7 +210,9 @@ export default function DashboardPage() {
 
                   return (
                     <tr key={index}>
-                      <td className="name-cell">{row[nameKey] || "Unknown"}</td>
+                      <td className="name-cell">
+                        {row[nameKey] || "Unknown"}
+                      </td>
                       <td>{formatValue(spend, "money")}</td>
                       <td>{formatValue(impressions, "number")}</td>
                       <td>{formatValue(row.reach, "number")}</td>
