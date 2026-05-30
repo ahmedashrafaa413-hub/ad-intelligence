@@ -254,3 +254,17 @@ body {
   border: 1px solid #2a3156;
   width: 100%;
 }
+.page-shell {
+  padding: 32px;
+  width: 100%;
+}
+
+.page-shell h1 {
+  margin: 0 0 12px;
+  font-size: 32px;
+}
+
+.page-shell p {
+  color: #9ca3af;
+  line-height: 1.7;
+}
