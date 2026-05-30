@@ -268,3 +268,47 @@ body {
   color: #9ca3af;
   line-height: 1.7;
 }
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+  padding: 32px;
+  overflow-x: hidden;
+}
+
+.sidebar-header {
+  margin-bottom: 28px;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  color: #8b7cff;
+  font-size: 22px;
+}
+
+.sidebar-header span {
+  display: block;
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-item {
+  display: block;
+  padding: 13px 14px;
+  border-radius: 12px;
+  color: #a7acc9;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background: #6557ff;
+  color: #fff;
+}
