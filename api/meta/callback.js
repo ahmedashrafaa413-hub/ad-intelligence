@@ -11,9 +11,19 @@ module.exports = async (req, res) => {
   const appId = process.env.META_APP_ID;
   const appSecret = process.env.META_APP_SECRET;
 
-  const host = req.headers.host;
-  const protocol = host.includes("localhost") ? "http" : "https";
-  const redirectUri = `${protocol}://${host}/api/meta/callback`;
+  if (!appId || !appSecret) {
+    return res.status(500).json({
+      success: false,
+      error: "META_APP_ID or META_APP_SECRET is missing"
+    });
+  }
+
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.APP_URL ||
+    "https://ad-intelligence-platform.vercel.app";
+
+  const redirectUri = `${appUrl}/api/meta/callback`;
 
   try {
     const tokenUrl =
@@ -37,7 +47,7 @@ module.exports = async (req, res) => {
       `meta_token=${encodeURIComponent(tokenData.access_token)}; Path=/; Max-Age=5184000; SameSite=Lax; Secure`
     ]);
 
-    return res.redirect("/");
+    return res.redirect("/connections?meta=connected");
   } catch (err) {
     return res.status(500).json({
       success: false,
