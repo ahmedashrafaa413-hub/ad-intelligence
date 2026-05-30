@@ -8,8 +8,9 @@ module.exports = async (req, res) => {
     });
   }
 
-  const redirectUri =
-    "https://ad-intelligence-platform-phi.vercel.app/api/meta/callback";
+  const host = req.headers.host;
+  const protocol = host.includes("localhost") ? "http" : "https";
+  const redirectUri = `${protocol}://${host}/api/meta/callback`;
 
   const scope = [
     "ads_read",
