@@ -1,4 +1,5 @@
 import "./globals.css";
+import Sidebar from "../components/layout/Sidebar";
 
 export const metadata = {
   title: "AdIntelligence",
@@ -8,7 +9,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl">
-      <body>{children}</body>
+      <body>
+        <div className="app-shell">
+          <Sidebar />
+          <main className="main-content">{children}</main>
+        </div>
+      </body>
     </html>
   );
 }
