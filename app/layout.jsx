@@ -12,7 +12,9 @@ export default function RootLayout({ children }) {
       <body>
         <div className="app-shell">
           <Sidebar />
-          <main className="main-content">{children}</main>
+          <main className="main">
+            {children}
+          </main>
         </div>
       </body>
     </html>
