@@ -9,15 +9,13 @@ const metrics = [
   { key: "spend", label: "Spend", icon: Wallet, format: "money" },
   { key: "impressions", label: "Impressions", icon: Eye, format: "number" },
   { key: "clicks", label: "Clicks", icon: MousePointerClick, format: "number" },
-  { key: "ctr", label: "CTR", icon: TrendingUp, format: "percent" },
+  { key: "ctr", label: "CTR", icon: TrendingUp, format: "percent" }
 ];
 
 function formatValue(value, type) {
   const num = Number(value || 0);
-
   if (type === "money") return `$${num.toFixed(2)}`;
   if (type === "percent") return `${num.toFixed(2)}%`;
-
   return num.toLocaleString();
 }
 
@@ -42,11 +40,10 @@ export default function DashboardPage() {
       setError("");
       const data = await apiGet("/api/meta/accounts");
       const list = data.data || [];
-      setAccounts(list);
-
       const saved = getSetting("primary_meta_account", "");
       const selected = saved || list[0]?.id || "";
 
+      setAccounts(list);
       setAccountId(selected);
       setStatus("Accounts loaded");
     } catch (err) {
@@ -94,7 +91,7 @@ export default function DashboardPage() {
       ...total,
       ctr: total.impressions ? (total.clicks / total.impressions) * 100 : 0,
       cpc: total.clicks ? total.spend / total.clicks : 0,
-      cpm: total.impressions ? (total.spend / total.impressions) * 1000 : 0,
+      cpm: total.impressions ? (total.spend / total.impressions) * 1000 : 0
     };
   }, [rows]);
 
@@ -138,9 +135,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <p className={error ? "dash-error" : "dash-status"}>
-        {error || status}
-      </p>
+      <p className={error ? "dash-error" : "dash-status"}>{error || status}</p>
 
       <section className="kpi-grid">
         {metrics.map((metric) => {
