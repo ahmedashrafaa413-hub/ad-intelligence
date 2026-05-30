@@ -1,5 +1,5 @@
-import SetupPage from "../setup/SetupPage";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return <SetupPage />;
+  redirect("/dashboard");
 }
