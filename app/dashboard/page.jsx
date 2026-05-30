@@ -3,6 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiGet } from "../../lib/api";
 import { getSetting, saveSetting } from "../../lib/storage";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid
+} from "recharts";
 
 const metricCards = [
   { key: "spend", label: "Spend", icon: "💰", format: "money" },
@@ -116,6 +125,13 @@ export default function DashboardPage() {
       ? "Ad Sets Performance"
       : "Campaigns Performance";
 
+  const chartData = rows.slice(0, 8).map((row) => ({
+    name: row[nameKey]?.slice(0, 22) || "Unknown",
+    spend: Number(row.spend || 0),
+    clicks: Number(row.clicks || 0),
+    impressions: Number(row.impressions || 0)
+  }));
+
   return (
     <main className="dash-pro">
       <header className="dash-pro-header">
@@ -183,6 +199,42 @@ export default function DashboardPage() {
           <p>
             راقب الحملات ذات CPC مرتفع وCTR منخفض لأنها غالبًا تحتاج تعديل Creative أو Audience.
           </p>
+        </div>
+      </section>
+
+      <section className="dash-chart-card">
+        <div className="dash-chart-head">
+          <div>
+            <h2>Performance Overview</h2>
+            <p>مقارنة سريعة بين أفضل الحملات حسب الإنفاق والكليكات.</p>
+          </div>
+        </div>
+
+        <div className="dash-chart-box">
+          {chartData.length === 0 ? (
+            <div className="dash-empty">
+              <h3>No chart data</h3>
+              <p>لا توجد بيانات كافية لعرض الرسم البياني.</p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#24304f" />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
+                <YAxis stroke="#94a3b8" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    background: "#11162a",
+                    border: "1px solid #2a3156",
+                    borderRadius: "14px",
+                    color: "#fff"
+                  }}
+                />
+                <Bar dataKey="spend" fill="#6d5cff" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="clicks" fill="#22c55e" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </section>
 
